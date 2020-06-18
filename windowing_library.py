@@ -25,18 +25,18 @@ def find_lift_windows(windowed_data):
   lift_windows =[]
   windows = windowed_data[0]
   for i in range(len(windows)):
-	x = windows[i][0]
-	y = windows[i][1]
-	z = windows[i][2]
-	nanos = windows[i][3]
-	var_total = statistics.variance(x) + statistics.variance(y) + statistics.variance(z)
-	variance.append(var_total)
+    x = windows[i][0]
+    y = windows[i][1]
+    z = windows[i][2]
+    nanos = windows[i][3]
+    var_total = statistics.variance(x) + statistics.variance(y) + statistics.variance(z)
+    variance.append(var_total)
   threshold = max(variance)/4
   for i in range(len(windows)): 
      if variance[i] >= threshold:
        lift_windows.append(windows[i])
        if (i != len(variance)-1) and (variance[i+1] < threshold):
-        break
+         break
   return lift_windows
 
 def start_time_on_smaller_windows(windowed_data, threshold):
