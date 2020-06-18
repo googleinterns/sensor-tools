@@ -1,9 +1,5 @@
 import pickle
-import matplotlib.pyplot as plt
 import numpy as np
-import skimage 
-from scipy import signal
-from scipy.spatial import procrustes
 from skimage.util.shape import view_as_windows
 import statistics
 
@@ -59,13 +55,13 @@ def start_time_on_smaller_windows(windowed_data, threshold):
   return start_time[0][3][0]
 
 def find_precise_start_time(lift_windows, rows, window_size, stride, variance_threshold):
-	front = lift_windows[0]
-	np_front = np.array(front)
-	windowed_data = view_as_windows(np_front, (rows, window_size), step=stride)
-	start_time = start_time_on_smaller_windows(windowed_data, variance_threshold)
-	return start_time
+  front = lift_windows[0]
+  np_front = np.array(front)
+  windowed_data = view_as_windows(np_front, (rows, window_size), step=stride)
+  start_time = start_time_on_smaller_windows(windowed_data, variance_threshold)
+  return start_time
 
- def initial_find_lift(sample, rows, window_size, stride):
-	windowed_data = create_windows(sample, rows, window_size, stride)
-	lift_windows = find_lift_windows(windowed_data)
-	return lift_windows
+def initial_find_lift(sample, rows, window_size, stride):
+  windowed_data = create_windows(sample, rows, window_size, stride)
+  lift_windows = find_lift_windows(windowed_data)
+  return lift_windows
