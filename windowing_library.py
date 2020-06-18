@@ -3,8 +3,6 @@ import numpy as np
 from skimage.util.shape import view_as_windows
 import statistics
 
-# make it usable for all rows and make one function you call first for phase 1 and 2 then a second main function for phase 3
-
 def create_windows(matrix, rows, window_size, stride, mod_num):
   x = matrix['x']
   y = matrix['y']
