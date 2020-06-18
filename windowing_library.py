@@ -18,7 +18,7 @@ def find_initial_lift_times(lift_windows, rows):
   end = lift_windows[-1][-1][-1]
   return start, end
 
-def find_lift_windows(windowed_data):
+def find_lift_windows(windowed_data, threshold_divisor):
   variance=[]
   lift_windows =[]
   windows = windowed_data[0]
@@ -29,7 +29,7 @@ def find_lift_windows(windowed_data):
 	nanos = windows[i][3]
 	var_total = statistics.variance(x) + statistics.variance(y) + statistics.variance(z)
 	variance.append(var_total)
-  threshold = max(variance)/4
+  threshold = max(variance)/threshold_divisor
   for i in range(len(windows)): 
      if variance[i] >= threshold:
        lift_windows.append(windows[i])
@@ -59,7 +59,7 @@ def find_precise_start_time(lift_windows, rows, window_size, stride, variance_th
   start_time = start_time_on_smaller_windows(windowed_data, variance_threshold)
   return start_time
 
-def initial_find_lift(sample, rows, window_size, stride):
+def initial_find_lift(sample, rows, window_size, stride, threshold_divisor):
   windowed_data = create_windows(sample, rows, window_size, stride)
-  lift_windows = find_lift_windows(windowed_data)
+  lift_windows = find_lift_windows(windowed_data, threshold_divisor)
   return lift_windows
