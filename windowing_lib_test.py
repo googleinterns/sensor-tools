@@ -13,7 +13,7 @@ def test_create_windows():
     window_size = 5
     stride = 5
 
-    test_windowed_data = wl.create_windows(
+    test_windowed_data = wl.create_windows_from_dictmatrix(
         sample_matrix, 4, window_size, stride)
     assert (test_windowed_data == np_wd).all()
 
