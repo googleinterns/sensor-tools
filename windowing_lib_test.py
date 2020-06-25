@@ -1,4 +1,4 @@
-import windowing_library as wl
+import windowing as wl
 import numpy as np
 import pytest
 

@@ -8,11 +8,12 @@ import statistics
 # Input: window_size = int (# of samples within one window when creating the windows)
 # Input: stride = int (# of samples between the start of each window)
 #
-#Description: takes dictionary that contains x, y, z, nanos keys and transforms
+# Description: takes dictionary that contains x, y, z, nanos keys and transforms
 #			  this into an np array. Then creates windows from this matrix and returns
 #			  the windows
 #
-#Return: windowed_data = np array (np array of the windowed data)
+# Return: windowed_data = np array (np array of the windowed data)
+
 
 def create_windows_from_dictmatrix(dict_matrix, rows, window_size, stride):
     x = dict_matrix['x']
