@@ -57,7 +57,7 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
         threshold -- int (used at the variance threshold. If using a divisor to find the variance threshold,
                                  leave threshold = 0)
         return_lift_windows -- boolean: (True:  will return a list of lift_windows that meet the variance threshold)
-                                                                   (False: will return just the start time of the lift_windows)
+                                        (False: will return just the start time of the lift_windows)
 
     Return:
         lift_windows -- np array (a np_array of windows that meet the desired threshold)
@@ -65,19 +65,14 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
         start_time -- int (start time in nanos of the lift_windows)
 
      """
-    if (threshold == 0):
-        indices = find_indices_that_meet_threshold(
-            windowed_data, 0, divisor)
-    else:
-        indices = find_indices_that_meet_threshold(
-            windowed_data, threshold, 0)
+    if (threshold != 0):
+        divisor = 0
+    indices = find_indices_that_meet_threshold(
+        windowed_data, threshold, divisor)
 
     windows = windowed_data[0]
-
     if (return_lift_windows):
-
         return get_lift_windows_from_indices(indices, windowed_data)
-
     else:
         if (indices.size == 0):
             return None
@@ -87,28 +82,29 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
 
 
 def get_lift_windows_from_indices(indices, windowed_data):
-	"""
-    Description: Finds the first set of continuous windows from the indices array
-
-    Args:
-        windowed_data -- np array
-        indices -- int (threshold for variance, if using a divisor set to 0 instead)
-
-    Return:
-        lift_windows -- np_array (array of indices that correspond to windows in
-                       windowed_data that meet the variance threshold level)
     """
-	windows = windowed_data[0]
-	if (indices.size <= 1):
-		indices = indices[0]
-	else:
-		indices = np.squeeze(indices)
-		indices_diff = np.diff(indices)
-		end_time = np.argwhere(indices_diff != 1)
-		if (end_time.size != 0):
-			indices = indices[:end_time[0][0]+1]
-	lift_windows = np.take(windows, indices, axis=0)
-	return lift_windows
+Description: Finds the first set of continuous windows from the indices array
+
+Args:
+    windowed_data -- np array
+    indices -- int (threshold for variance, if using a divisor set to 0 instead)
+
+Return:
+    lift_windows -- np_array (array of indices that correspond to windows in
+                   windowed_data that meet the variance threshold level)
+"""
+    windows = windowed_data[0]
+    if (indices.size <= 1):
+        indices = indices[0]
+    else:
+        indices = np.squeeze(indices)
+        indices_diff = np.diff(indices)
+        end_time = np.argwhere(indices_diff != 1)
+        if (end_time.size != 0):
+            indices = indices[:end_time[0][0]+1]
+    lift_windows = np.take(windows, indices, axis=0)
+    return lift_windows
+
 
 def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
     """
@@ -129,9 +125,11 @@ def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
     variances = np.var(windows_no_nanos, axis=2, ddof=1)
     var_sum = np.sum(variances, axis=1)
     if divisor == 0:
-        indices = np.argwhere(var_sum > threshold)
+    	variance_threshold = threshold
+        #indices = np.argwhere(var_sum > threshold)
     else:
-        indices = np.argwhere(var_sum > max(var_sum)/divisor)
+    	variance_threshold = max(var_sum)/divisor
+    indices = np.argwhere(var_sum > variance_threshold)
     return indices
 
 
