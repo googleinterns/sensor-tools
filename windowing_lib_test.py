@@ -30,8 +30,6 @@ def test_find_intial_lift_times():
     assert start == exp_start
     assert end == exp_end
 
-#def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
-
 def test_find_lift_windows():
     divisor = 4
     threshold = 0
