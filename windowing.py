@@ -162,7 +162,7 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
     Description: Finds set of windows whose varaince meets a threshold indicating it contains part of the 'lift'
 
     Args:
-        lift_windows -- np array
+        sample -- dictionary matrix with the x, y, z, and nanos data points
         rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
         window_size -- int (# of samples within one window when creating the windows)
         stride -- int (# of smaples in between the start of each window)
@@ -172,7 +172,6 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
         lift_windows -- np array (an array of windows that meet the variance threshold)
     """
     windowed_data = create_windows_from_dictmatrix(sample, rows, window_size, stride)
-    lift_windows = find_lift_windows(windowed_data, divisor)
     return_lift_windows = True
     lift_windows = find_lift_windows(
         windowed_data, divisor, 0, return_lift_windows)
@@ -187,7 +186,6 @@ def cropped_np(np_sample, start, end):
 	    np_sample -- np array
 	    start -- int (start time in nanos to begin crop)
 	    end -- int (end time in nanos the end crop)
-
 
 	Return:
 	    cropped -- np array (a np array from start to end time in nanos)
