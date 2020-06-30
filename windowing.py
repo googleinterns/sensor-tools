@@ -171,7 +171,7 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
     Return:
         lift_windows -- np array (an array of windows that meet the variance threshold)
     """
-    windowed_data = create_windows(sample, rows, window_size, stride)
+    windowed_data = create_windows_from_dictmatrix(sample, rows, window_size, stride)
     lift_windows = find_lift_windows(windowed_data, divisor)
     return_lift_windows = True
     lift_windows = find_lift_windows(
