@@ -173,8 +173,9 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
     """
     windowed_data = create_windows_from_dictmatrix(sample, rows, window_size, stride)
     return_lift_windows = True
+    threshold = 0
     lift_windows = find_lift_windows(
-        windowed_data, divisor, 0, return_lift_windows)
+        windowed_data, divisor, threshold, return_lift_windows)
     return lift_windows
 
 
