@@ -83,16 +83,16 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
 
 def get_lift_windows_from_indices(indices, windowed_data):
     """
-Description: Finds the first set of continuous windows from the indices array
+	Description: Finds the first set of continuous windows from the indices array
 
-Args:
-    windowed_data -- np array
-    indices -- int (threshold for variance, if using a divisor set to 0 instead)
+	Args:
+	    windowed_data -- np array
+	    indices -- int (threshold for variance, if using a divisor set to 0 instead)
 
-Return:
-    lift_windows -- np_array (array of indices that correspond to windows in
-                   windowed_data that meet the variance threshold level)
-"""
+	Return:
+	    lift_windows -- np_array (array of indices that correspond to windows in
+	                   windowed_data that meet the variance threshold level)
+	"""
     windows = windowed_data[0]
     if (indices.size <= 1):
         indices = indices[0]
@@ -125,10 +125,9 @@ def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
     variances = np.var(windows_no_nanos, axis=2, ddof=1)
     var_sum = np.sum(variances, axis=1)
     if divisor == 0:
-    	variance_threshold = threshold
-        #indices = np.argwhere(var_sum > threshold)
+        variance_threshold = threshold
     else:
-    	variance_threshold = max(var_sum)/divisor
+        variance_threshold = max(var_sum)/divisor
     indices = np.argwhere(var_sum > variance_threshold)
     return indices
 
@@ -182,17 +181,17 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
 
 def cropped_np(np_sample, start, end):
     """
-Description: returns the cropped sample from the start and end time in nanos
+	Description: returns the cropped sample from the start and end time in nanos
 
-Args:
-    np_sample -- np array
-    start -- int (start time in nanos to begin crop)
-    end -- int (end time in nanos the end crop)
+	Args:
+	    np_sample -- np array
+	    start -- int (start time in nanos to begin crop)
+	    end -- int (end time in nanos the end crop)
 
 
-Return:
-    cropped -- np array (a np array from start to end time in nanos)
-"""
+	Return:
+	    cropped -- np array (a np array from start to end time in nanos)
+	"""
     nanos = np_sample[3]
     start_index = np.where(nanos == start)
     end_index = np.where(nanos == end)
