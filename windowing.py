@@ -194,5 +194,5 @@ def cropped_np(np_sample, start, end):
     nanos = np_sample[3]
     start_index = np.where(nanos == start)
     end_index = np.where(nanos == end)
-    cropped = np_sample[:,  start_index[0][0]:end_index[0][0] + 1]
+    cropped = [np_sample[:,  start_index[0][0]:end_index[0][0] + 1]]
     return cropped
