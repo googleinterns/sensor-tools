@@ -50,17 +50,21 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
                  Then calculates variance threshold and returns an np array of
                  the windows that meet the variance threshold.
     Args:
-        windowed_data -- np array [[[[x1],[y1],[z1],[nanos1]], [[x2], [y2], [z2], [nanos2]]...]
+        windowed_data -- np array [[[[x1],[y1],[z1],[nanos1]], [[x2], [y2], 
+                                         [z2], [nanos2]]...]
         divisor -- int (will use divisor to calculate variance threshold so
-                   that the threshold is a function of the max variance. If using a set threshold, make
-                   divisor = 0. Threshold = (max variance)/divisor)
-        threshold -- int (used at the variance threshold. If using a divisor to find the variance threshold,
-                                 leave threshold = 0)
-        return_lift_windows -- boolean: (True:  will return a list of lift_windows that meet the variance threshold)
+                   that the threshold is a function of the max variance. If using 
+                   a set threshold, make divisor = 0. 
+                   Threshold = (max variance)/divisor)
+        threshold -- int (used at the variance threshold. If using a divisor to 
+        			 find the variance threshold, leave threshold = 0)
+        return_lift_windows -- boolean: (True:  will return a list of 
+        							     		lift_windows that meet the variance threshold)
                                         (False: will return just the start time of the lift_windows)
 
     Return:
-        lift_windows -- np array (a np_array of windows that meet the desired threshold)
+        lift_windows -- np array (a np_array of windows that meet the desired 
+        				threshold)
         -- or --
         start_time -- int (start time in nanos of the lift_windows)
 
@@ -83,16 +87,18 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
 
 def get_lift_windows_from_indices(indices, windowed_data):
     """
-	Description: Finds the first set of continuous windows from the indices array
+        Description: Finds the first set of continuous windows from the indices 
+        			 array
 
-	Args:
-	    windowed_data -- np array
-	    indices -- int (threshold for variance, if using a divisor set to 0 instead)
+        Args:
+            windowed_data -- np array
+            indices -- int (threshold for variance, if using a divisor set to 0 
+            				instead)
 
-	Return:
-	    lift_windows -- np_array (array of indices that correspond to windows in
-	                   windowed_data that meet the variance threshold level)
-	"""
+        Return:
+            lift_windows -- np_array (array of indices that correspond to windows in
+                           windowed_data that meet the variance threshold level)
+        """
     windows = windowed_data[0]
     if (indices.size <= 1):
         indices = indices[0]
@@ -132,7 +138,8 @@ def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
     return indices
 
 
-def find_precise_start_time(lift_windows, rows, window_size, stride, variance_threshold):
+def find_precise_start_time(lift_windows, rows,
+                            window_size, stride, variance_threshold):
     """
     Description: Finds a more precise start time by creating much smaller windows
                  within the first window found to contain part of the lift ouputted
@@ -159,7 +166,8 @@ def find_precise_start_time(lift_windows, rows, window_size, stride, variance_th
 
 def initial_find_lift(sample, rows, window_size, stride, divisor):
     """
-    Description: Finds set of windows whose varaince meets a threshold indicating it contains part of the 'lift'
+    Description: Finds set of windows whose varaince meets a 
+                         threshold indicating it contains part of the 'lift'
 
     Args:
         sample -- dictionary matrix with the x, y, z, and nanos data points
@@ -171,7 +179,8 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
     Return:
         lift_windows -- np array (an array of windows that meet the variance threshold)
     """
-    windowed_data = create_windows_from_dictmatrix(sample, rows, window_size, stride)
+    windowed_data = create_windows_from_dictmatrix(
+        sample, rows, window_size, stride)
     return_lift_windows = True
     threshold = 0
     lift_windows = find_lift_windows(
@@ -181,16 +190,16 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
 
 def cropped_np(np_sample, start, end):
     """
-	Description: returns the cropped sample from the start and end time in nanos
+        Description: returns the cropped sample from the start and end time in nanos
 
-	Args:
-	    np_sample -- np array
-	    start -- int (start time in nanos to begin crop)
-	    end -- int (end time in nanos the end crop)
+        Args:
+            np_sample -- np array
+            start -- int (start time in nanos to begin crop)
+            end -- int (end time in nanos the end crop)
 
-	Return:
-	    cropped -- np array (a np array from start to end time in nanos)
-	"""
+        Return:
+            cropped -- np array (a np array from start to end time in nanos)
+        """
     nanos = np_sample[3]
     start_index = np.where(nanos == start)
     end_index = np.where(nanos == end)
