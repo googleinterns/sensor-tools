@@ -47,13 +47,13 @@ def test_refined_start_time():
     WINDOWED_DATA_REFINED= [[[[1, 1], [1, 1], [1, 1], [1, 2]], [[1, 5], [1, 5], [1, 10], [3, 4]], [[1, 1], [
         1, 1], [1, 1], [5, 6]], [[1, 20], [1, 20], [1, 20], [7, 8]], [[20, 20], [20, 20], [20, 20], [9, 10]]]]
 
-    np_WINDOWED_DATA_REFINED = np.array(WINDOWED_DATA_REFINED)
+    NP_WINDOWED_DATA_REFINED = np.array(WINDOWED_DATA_REFINED)
     threshold = 2
     divisor = 0
     return_lift_windows = False
     expected_start_time = 3
     actual_start_time = wl.find_lift_windows(
-        np_WINDOWED_DATA_REFINED, divisor, threshold, return_lift_windows)
+        NP_WINDOWED_DATA_REFINED, divisor, threshold, return_lift_windows)
     assert actual_start_time == expected_start_time
 
 
