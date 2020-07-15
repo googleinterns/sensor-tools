@@ -50,20 +50,20 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
                  Then calculates variance threshold and returns an np array of
                  the windows that meet the variance threshold.
     Args:
-        windowed_data -- np array [[[[x1],[y1],[z1],[nanos1]], [[x2], [y2], 
+        windowed_data -- np array [[[[x1],[y1],[z1],[nanos1]], [[x2], [y2],
                                          [z2], [nanos2]]...]
         divisor -- int (will use divisor to calculate variance threshold so
-                   that the threshold is a function of the max variance. If using 
-                   a set threshold, make divisor = 0. 
+                   that the threshold is a function of the max variance. If using
+                   a set threshold, make divisor = 0.
                    Threshold = (max variance)/divisor)
-        threshold -- int (used at the variance threshold. If using a divisor to 
+        threshold -- int (used at the variance threshold. If using a divisor to
                                  find the variance threshold, leave threshold = 0)
-        return_lift_windows -- boolean: (True:  will return a list of 
-                                                                                lift_windows that meet the variance threshold)
+        return_lift_windows -- boolean: (True:  will return a list of
+                                         lift_windows that meet the variance threshold)
                                         (False: will return just the start time of the lift_windows)
 
     Return:
-        lift_windows -- np array (a np_array of windows that meet the desired 
+        lift_windows -- np array (a np_array of windows that meet the desired
                                         threshold)
         -- or --
         start_time -- int (start time in nanos of the lift_windows)
@@ -87,12 +87,12 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
 
 def get_lift_windows_from_indices(indices, windowed_data):
     """
-        Description: Finds the first set of continuous windows from the indices 
+        Description: Finds the first set of continuous windows from the indices
                                  array
 
         Args:
             windowed_data -- np array
-            indices -- int (threshold for variance, if using a divisor set to 0 
+            indices -- int (threshold for variance, if using a divisor set to 0
                                         instead)
 
         Return:
@@ -166,7 +166,7 @@ def find_precise_start_time(lift_windows, rows,
 
 def initial_find_lift(sample, rows, window_size, stride, divisor):
     """
-    Description: Finds set of windows whose varaince meets a 
+    Description: Finds set of windows whose varaince meets a
                          threshold indicating it contains part of the 'lift'
 
     Args:
@@ -205,3 +205,82 @@ def cropped_np(np_sample, start, end):
     end_index = np.where(nanos == end)
     cropped = [np_sample[:,  start_index[0][0]:end_index[0][0] + 1]]
     return cropped
+
+
+def place_data_in_set(np_sample, data_key, data_label, dictionary, positive, window_size, stride):
+    """
+        Description: windows the np_sample (np array) with desired specifications and then
+        			 places the windows into dictionary["data_key"] (dictionary) and creates a
+        			 corresponding number of labels to dictionary["data_label"]
+
+        Args:
+            np_sample -- np array
+            data_key -- String (key within dictionary to place windows)
+            data_label -- String (key within dictionato place label)
+            dictionary -- dict (dictionary where windows and labels will be added to)
+            positive -- boolean (binary label of windows)
+            window_size -- int
+            stride -- int (# of samples to jump before creating next window)
+
+
+        Return:
+            dictionary -- dict (updated dictionary with added windows and labels)
+        """
+    rows = len(np_sample)
+    windowed_data = view_as_windows(np_sample, (rows, window_size), stride)
+    dictionary[data_key].extend(windowed_data[0])
+    if (positive):
+        pos_or_neg = np.ones(len(windowed_data[0]))
+    else:
+        pos_or_neg = np.zeros(len(windowed_data[0]))
+    dictionary[data_label].extend(pos_or_neg)
+    return dictionary
+
+
+def place_in_set(data_count, num_test, num_train, num_validation):
+    """
+        Description: determines where the current sample shoud be placed (training, testing, 
+        			  validation)
+
+        Args:
+            data_count -- int (should always been in range [0-num_test + num_train + num_validation])
+            num_test -- int (# in test set = num_test/(num_test + num_train + num_validation))
+            num_train -- int (# in test set = num_train/(num_test + num_train + num_validation))
+            num_validation -- int (# in test set = num_validation/(num_test + num_train + num_validation))
+           
+        Return:
+            string ("test, "train", "validation" ) for where the current sample should be placed
+        """
+    if (data_count < num_test):
+        return "test"
+    if (data_count < num_train + num_test and data_count >= num_test):
+        return "train"
+    else:
+        return "validation"
+
+
+def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
+    """
+        Description: returns the precise start time if it is not None or returns the start found 
+        			 from find_initial_lift_times 
+
+        Args:
+            lift_windows -- int (should always been in range [0-num_test + num_train + num_validation])
+            rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
+        	window_size -- int (# of samples within one window when creating the windows)
+            stride -- int (# of samples to jump before creating next window)
+            variance_threshold -- int (variance threshold that determines
+                                  wether the current window is part of the lift)
+
+
+        Return:
+            string ("test, "train", "validation" ) for where the current sample should be placed
+        """
+    start, end = find_initial_lift_times(lift_windows, rows)
+    start2 = find_precise_start_time(
+        lift_windows, rows, window_size, stride, variance_threshold)
+    if (start2 != None):
+        start_time = start2
+    else:
+        start_time = start
+    return start_time, end
