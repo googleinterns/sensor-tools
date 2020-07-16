@@ -207,16 +207,16 @@ def cropped_np(np_sample, start, end):
     return cropped
 
 
-def place_data_in_set(np_sample, data_key, data_label, dictionary, positive, window_size, stride):
+def place_data(np_sample, data_key, data_label, dictionary, positive, window_size, stride):
     """
         Description: windows the np_sample (np array) with desired specifications and then
-        			 places the windows into dictionary["data_key"] (dictionary) and creates a
-        			 corresponding number of labels to dictionary["data_label"]
+                     places the windows into dictionary["data_key"] and creates a
+                     corresponding number of labels to dictionary["data_label"]
 
         Args:
             np_sample -- np array
-            data_key -- String (key within dictionary to place windows)
-            data_label -- String (key within dictionato place label)
+            data_key -- String (key within dictionary to place windows: dictionary[data_key])
+            data_label -- String (key within dictionato place label: dictionary[data_label])
             dictionary -- dict (dictionary where windows and labels will be added to)
             positive -- boolean (binary label of windows)
             window_size -- int
@@ -237,17 +237,18 @@ def place_data_in_set(np_sample, data_key, data_label, dictionary, positive, win
     return dictionary
 
 
-def place_in_set(data_count, num_test, num_train, num_validation):
+def choose_dataset(data_count, num_test, num_train, num_validation):
     """
         Description: determines where the current sample shoud be placed (training, testing, 
-        			  validation)
+                                  validation)
 
         Args:
-            data_count -- int (should always been in range [0-num_test + num_train + num_validation])
+            data_count -- int (should always been in range 
+            				[0 -- num_test + num_train + num_validation])
             num_test -- int (# in test set = num_test/(num_test + num_train + num_validation))
             num_train -- int (# in test set = num_train/(num_test + num_train + num_validation))
             num_validation -- int (# in test set = num_validation/(num_test + num_train + num_validation))
-           
+
         Return:
             string ("test, "train", "validation" ) for where the current sample should be placed
         """
@@ -262,25 +263,26 @@ def place_in_set(data_count, num_test, num_train, num_validation):
 def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
     """
         Description: returns the precise start time if it is not None or returns the start found 
-        			 from find_initial_lift_times 
+                     from find_initial_lift_times 
 
         Args:
             lift_windows -- int (should always been in range [0-num_test + num_train + num_validation])
             rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
-        	window_size -- int (# of samples within one window when creating the windows)
+            window_size -- int (# of samples within one window when creating the windows)
             stride -- int (# of samples to jump before creating next window)
             variance_threshold -- int (variance threshold that determines
                                   wether the current window is part of the lift)
 
 
         Return:
-            string ("test, "train", "validation" ) for where the current sample should be placed
+            start_time -- int (start time in nanos)
+            end -- int (end time in nanos)
         """
     start, end = find_initial_lift_times(lift_windows, rows)
-    start2 = find_precise_start_time(
+    precise_start = find_precise_start_time(
         lift_windows, rows, window_size, stride, variance_threshold)
-    if (start2 != None):
-        start_time = start2
+    if (precise_start != None):
+        start_time = precise_start
     else:
         start_time = start
     return start_time, end
