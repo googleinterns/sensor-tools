@@ -1,4 +1,3 @@
-import pickle
 import numpy as np
 from skimage.util.shape import view_as_windows
 
@@ -207,59 +206,6 @@ def cropped_np(np_sample, start, end):
     return cropped
 
 
-def place_data(np_sample, data_key, data_label, dictionary, positive, window_size, stride):
-    """
-        Description: windows the np_sample (np array) with desired specifications and then
-                     places the windows into dictionary["data_key"] and creates a
-                     corresponding number of labels to dictionary["data_label"]
-
-        Args:
-            np_sample -- np array
-            data_key -- String (key within dictionary to place windows: dictionary[data_key])
-            data_label -- String (key within dictionato place label: dictionary[data_label])
-            dictionary -- dict (dictionary where windows and labels will be added to)
-            positive -- boolean (binary label of windows)
-            window_size -- int
-            stride -- int (# of samples to jump before creating next window)
-
-
-        Return:
-            dictionary -- dict (updated dictionary with added windows and labels)
-        """
-    rows = len(np_sample)
-    windowed_data = view_as_windows(np_sample, (rows, window_size), stride)
-    dictionary[data_key].extend(windowed_data[0])
-    if (positive):
-        pos_or_neg = np.ones(len(windowed_data[0]))
-    else:
-        pos_or_neg = np.zeros(len(windowed_data[0]))
-    dictionary[data_label].extend(pos_or_neg)
-    return dictionary
-
-
-def choose_dataset(data_count, num_test, num_train, num_validation):
-    """
-        Description: determines where the current sample shoud be placed (training, testing, 
-                                  validation)
-
-        Args:
-            data_count -- int (should always been in range 
-            				[0 -- num_test + num_train + num_validation])
-            num_test -- int (# in test set = num_test/(num_test + num_train + num_validation))
-            num_train -- int (# in test set = num_train/(num_test + num_train + num_validation))
-            num_validation -- int (# in test set = num_validation/(num_test + num_train + num_validation))
-
-        Return:
-            string ("test, "train", "validation" ) for where the current sample should be placed
-        """
-    if (data_count < num_test):
-        return "test"
-    if (data_count < num_train + num_test and data_count >= num_test):
-        return "train"
-    else:
-        return "validation"
-
-
 def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
     """
         Description: returns the precise start time if it is not None or returns the start found 
@@ -286,3 +232,57 @@ def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
     else:
         start_time = start
     return start_time, end
+
+def front_start_centered(np_sample, start, window_size):
+    """
+    Description: Creates a window centered around the start time of the lift
+
+    Args:
+        np_sample -- np array (The full trace as an np array)
+        start -- int (Start time of the lift in nanoseconds)
+        window_size -- int (Size of window)
+
+
+    Return:
+        window -- np_array (Window centered around start time)
+    """
+    nanos = np_sample[3]
+    start_index = np.where(nanos == start)
+    add_front = window_size/2
+    add_back = window_size/2
+    front_index = start_index[0][0] - add_front
+    if (front_index < 0):
+        add_back += abs(front_index)
+        front_index = 0
+    front_index = int(front_index)
+    back_index = int(start_index[0][0] + add_back)
+    window = [np_sample[:3, front_index: back_index]]
+    return window
+
+def back_end_centered(np_sample, end, window_size):
+    """
+    Description: Creates a window centered around the end time of the lift
+
+    Args:
+        np_sample -- np array (The full trace as an np array)
+        end -- int (End time of the lift in nanoseconds)
+        window_size -- int (Size of window)
+
+
+    Return:
+        window -- np_array (Window centered around end time)
+    """
+    nanos = np_sample[3]
+    end_index = np.where(nanos == end)
+    add_front = window_size/2
+    add_back = window_size/2
+    back_index = end_index[0][0] + add_front
+    last = len(np_sample[0])-1
+    if (back_index > last):
+        add_front = add_front + back_index - last
+        back_index = last
+    front_index = int(end_index[0][0]) - int(add_front)
+    back_index = int(back_index)
+    window = [np_sample[:3, front_index + 1: back_index + 1]]
+    return window
+

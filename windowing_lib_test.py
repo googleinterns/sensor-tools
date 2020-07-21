@@ -1,6 +1,7 @@
 import windowing as wl
 import numpy as np
 import pytest
+import pytest_diff
 
 
 SAMPLE_MATRIX = {'x': [1, 1, 1, 1, 1, 20, 20, 1, 1, 1], 'y': [1, 1, 1, 1, 1, 20, 20, 1, 1, 1], 'z': [
@@ -71,53 +72,11 @@ def test_find_precise_start_time():
         np_front_window_lift, rows, window_size, stride, threshold)
     assert expected_start_time == actual_start_time
 
-
-def test_place_data():
-    LIFT = [[10, 20], [10, 20], [1, 2]]
-    np_LIFT = np.array(LIFT)
-    expected_train = {"data": [[[10], [10], [1]],
-                               [[20], [20], [2]]], "labels": [1, 1]}
-    train = {"data": [], "labels": []}
-    data_key = "data"
-    data_label = "labels"
-    dictionary = train
-    window_size = 1
-    stride = 1
-    positive = True
-    actual_train = wl.place_data(
-        np_LIFT, data_key, data_label, dictionary, positive, window_size, stride)
-    np_expected_data = np.array(expected_train["data"])
-    assert (expected_train["labels"] == actual_train["labels"])
-    assert (np_expected_data == actual_train["data"]).all()
-
-
-def test_choose_dataset():
-    data_count = 5
-    num_test = 3
-    num_train = 5
-    num_validation = 2
-    expected_dataset = "train"
-    actual_dataset = wl.choose_dataset(
-        data_count, num_test, num_train, num_validation)
-    assert expected_dataset == actual_dataset
-    data_count = 0
-    expected_dataset = "test"
-    actual_dataset = wl.choose_dataset(
-        data_count, num_test, num_train, num_validation)
-    assert expected_dataset == actual_dataset
-    data_count = 9
-    expected_dataset = "validation"
-    actual_dataset = wl.choose_dataset(
-        data_count, num_test, num_train, num_validation)
-    assert expected_dataset == actual_dataset
-
-# def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
-
+FRONT_WINDOW_LIFT = [[[1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [
+        1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
+np_FRONT_WINDOW_LIFT = np.array(FRONT_WINDOW_LIFT)
 
 def test_get_start_time():
-    FRONT_WINDOW_LIFT = [[[1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [
-        1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
-    np_FRONT_WINDOW_LIFT = np.array(FRONT_WINDOW_LIFT)
     expected_start = 6
     expected_end = 10
     rows = 4
@@ -128,3 +87,24 @@ def test_get_start_time():
         np_FRONT_WINDOW_LIFT, rows, window_size, stride, variance_threshold)
     assert expected_start == actual_start
     assert expected_end == actual_end
+
+
+def test_front_start_centered():
+    
+    start = 5
+    window_size = 4
+    expected_window = np.array([[2, 2, 2, 2], [2, 2, 2, 2], [2, 2, 2, 2]])
+    actual_window = wl.front_start_centered(
+        np_FRONT_WINDOW_LIFT[0], start, window_size)
+    assert (expected_window == actual_window).all()
+
+
+def test_back_end_centered():
+    
+    end = 6
+    window_size = 4
+    expected_window = np.array(
+        [[2, 2, 20, 20], [2, 2, 20, 20], [2, 2, 20, 20]])
+    actual_window = wl.back_end_centered(
+        np_FRONT_WINDOW_LIFT[0], end, window_size)
+    assert (expected_window == actual_window).all()
