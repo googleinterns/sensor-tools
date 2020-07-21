@@ -287,7 +287,7 @@ def back_end_centered(np_sample, end, window_size):
     if (back_index > last):
         add_front = abs(last - back_index) + add_front
         back_index = last
-    front_index = int(end_index) - int(add_front)
-    back_index = int(back_index)
+    front_index = end_index - add_front
+    back_index = back_index
     window = [np_sample[:3, front_index: back_index]]
     return window
