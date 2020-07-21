@@ -72,9 +72,11 @@ def test_find_precise_start_time():
         np_front_window_lift, rows, window_size, stride, threshold)
     assert expected_start_time == actual_start_time
 
+
 FRONT_WINDOW_LIFT = [[[1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [
-        1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
+    1, 1, 2, 2, 2, 2, 20, 20, 20, 20], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
 np_FRONT_WINDOW_LIFT = np.array(FRONT_WINDOW_LIFT)
+
 
 def test_get_start_time():
     expected_start = 6
@@ -90,7 +92,6 @@ def test_get_start_time():
 
 
 def test_front_start_centered():
-    
     start = 5
     window_size = 4
     expected_window = np.array([[2, 2, 2, 2], [2, 2, 2, 2], [2, 2, 2, 2]])
@@ -100,7 +101,6 @@ def test_front_start_centered():
 
 
 def test_back_end_centered():
-    
     end = 6
     window_size = 4
     expected_window = np.array(
