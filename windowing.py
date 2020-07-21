@@ -248,15 +248,15 @@ def front_start_centered(np_sample, start, window_size):
         window -- np_array (Window centered around start time)
     """
     nanos = np_sample[3]
-    start_index = np.where(nanos == start)
+    start_index = np.where(nanos == start)[0][0]
     add_front = window_size/2
     add_back = window_size/2
-    front_index = start_index[0][0] - add_front
+    front_index = start_index - add_front
     if (front_index < 0):
         add_back += abs(front_index)
         front_index = 0
     front_index = int(front_index)
-    back_index = int(start_index[0][0] + add_back)
+    back_index = int(start_index + add_back)
     window = [np_sample[:3, front_index: back_index]]
     return window
 
@@ -274,16 +274,17 @@ def back_end_centered(np_sample, end, window_size):
         window -- np_array (Window centered around end time)
     """
     nanos = np_sample[3]
-    end_index = np.where(nanos == end)
-    add_front = window_size/2
-    add_back = window_size/2
-    back_index = end_index[0][0] + add_front
+    end_index = np.where(nanos == end)[0][0]
+    add_front = int(window_size/2)
+    add_back = int(window_size/2)
+    if window_size%2 !=0:
+        add_back += 1
+    back_index = end_index + add_back
     last = len(np_sample[0])-1
     if (back_index > last):
-        add_front = add_front + back_index - last
+        add_front = abs(last - back_index) + add_front
         back_index = last
-    front_index = int(end_index[0][0]) - int(add_front)
+    front_index = int(end_index) - int(add_front)
     back_index = int(back_index)
-    window = [np_sample[:3, front_index + 1: back_index + 1]]
+    window = [np_sample[:3, front_index: back_index]]
     return window
-

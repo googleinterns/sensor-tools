@@ -102,9 +102,9 @@ def test_front_start_centered():
 
 def test_back_end_centered():
     end = 6
-    window_size = 4
+    window_size = 5
     expected_window = np.array(
-        [[2, 2, 20, 20], [2, 2, 20, 20], [2, 2, 20, 20]])
+        [[2, 2, 2, 20, 20], [2, 2, 2, 20, 20], [2, 2, 2, 20, 20]])
     actual_window = wl.back_end_centered(
         np_FRONT_WINDOW_LIFT[0], end, window_size)
     assert (expected_window == actual_window).all()
