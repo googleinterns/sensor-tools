@@ -55,19 +55,22 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
                    that the threshold is a function of the max variance. If using
                    a set threshold, make divisor = 0.
                    Threshold = (max variance)/divisor)
-        threshold -- int (Used at the variance threshold. If using a divisor to
-                                 find the variance threshold, leave threshold = 0)
+        threshold -- int (Used as the variance threshold. If using a divisor to
+                          find the variance threshold, leave threshold = 0)
         return_lift_windows -- boolean: (True:  will return a list of
                                          lift_windows that meet the variance threshold)
                                         (False: will return just the start time of the lift_windows)
 
     Return:
         lift_windows -- np array (A np_array of windows that meet the desired
-                                        threshold)
+                                  threshold)
         -- or --
         start_time -- int (Start time in nanos of the lift_windows)
 
      """
+    if (threshold !=0 and divisor !=0):
+        print("ERROR: Either divisor or threshold need equal to 0 to specify which to use.")
+        return -1
     if (threshold != 0):
         divisor = 0
     indices = find_indices_that_meet_threshold(
@@ -165,7 +168,7 @@ def find_precise_start_time(lift_windows, rows,
 
 def initial_find_lift(sample, rows, window_size, stride, divisor):
     """
-    Description: Finds set of windows whose varaince meets a
+    Description: Finds set of windows whose variance meets a
                          threshold indicating it contains part of the 'lift'
 
     Args:
