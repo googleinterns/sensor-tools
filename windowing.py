@@ -215,7 +215,7 @@ def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
                      from find_initial_lift_times 
 
         Args:
-            lift_windows -- int (Should always been in range [0-num_test + num_train + num_validation])
+            lift_windows -- np_array (Np array of the lift windows)
             rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
             window_size -- int (# of samples within one window when creating the windows)
             stride -- int (# of samples to jump before creating next window)
@@ -237,57 +237,38 @@ def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
     return start_time, end
 
 
-def front_start_centered(np_sample, start, window_size):
+def centered_window(np_sample, center_time, window_size):
     """
-    Description: Creates a window centered around the start time of the lift
+    Description: Creates a window centered around the center_time of the lift
 
     Args:
         np_sample -- np array (The full trace as an np array)
-        start -- int (Start time of the lift in nanoseconds)
+        center_time -- int (Time in nanoseconds that the window should be centered around)
         window_size -- int (Size of window)
 
 
     Return:
-        window -- np_array (Window centered around start time)
+        window -- np_array (Window centered around the given time)
     """
     nanos = np_sample[3]
-    start_index = np.where(nanos == start)[0][0]
-    add_front = window_size/2
-    add_back = window_size/2
-    front_index = start_index - add_front
-    if (front_index < 0):
-        add_back += abs(front_index)
-        front_index = 0
-    front_index = int(front_index)
-    back_index = int(start_index + add_back)
-    window = [np_sample[:3, front_index: back_index]]
-    return window
-
-def back_end_centered(np_sample, end, window_size):
-    """
-    Description: Creates a window centered around the end time of the lift
-
-    Args:
-        np_sample -- np array (The full trace as an np array)
-        end -- int (End time of the lift in nanoseconds)
-        window_size -- int (Size of window)
-
-
-    Return:
-        window -- np_array (Window centered around end time)
-    """
-    nanos = np_sample[3]
-    end_index = np.where(nanos == end)[0][0]
+    center_index = np.where(nanos == center_time)[0][0]
     add_front = int(window_size/2)
     add_back = int(window_size/2)
     if window_size%2 !=0:
         add_back += 1
-    back_index = end_index + add_back
+    back_index = center_index + add_back
+    front_index = center_index - add_front
     last = len(np_sample[0])-1
+    if (front_index < 0):
+        add_back += abs(front_index)
+        front_index = 0
+        back_index = center_index + add_back
     if (back_index > last):
-        add_front = abs(last - back_index) + add_front
-        back_index = last
-    front_index = end_index - add_front
-    back_index = back_index
+        add_front = abs(last - back_index) + add_front -1
+        back_index = last + 1
+        front_index = center_index - add_front
+        if (front_index < 0):
+            front_index = 0
     window = [np_sample[:3, front_index: back_index]]
     return window
+
