@@ -195,7 +195,7 @@ def cropped_np(np_sample, start, end):
         Description: Returns the cropped sample from the start and end time in nanos
 
         Args:
-            np_sample -- np array
+            np_sample -- np array (Np array to be cropped)
             start -- int (Start time in nanos to begin crop)
             end -- int (End time in nanos the end crop)
 
@@ -211,8 +211,7 @@ def cropped_np(np_sample, start, end):
 
 def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
     """
-        Description: Returns the precise start time if it is not None or returns the start found 
-                     from find_initial_lift_times 
+        Description: Returns the precise start time
 
         Args:
             lift_windows -- np_array (Np array of the lift windows)
@@ -221,7 +220,6 @@ def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
             stride -- int (# of samples to jump before creating next window)
             variance_threshold -- int (Variance threshold that determines
                                   wether the current window is part of the lift)
-
 
         Return:
             start_time -- int (start time in nanos)
@@ -251,11 +249,9 @@ def centered_window(np_sample, center_time, window_size):
         window -- np_array (Window centered around the given time)
     """
     nanos = np_sample[3]
-    center_index = np.where(nanos == center_time)[0][0]
+    center_index = np.argwhere(nanos == center_time)[0][0]
     add_front = int(window_size/2)
-    add_back = int(window_size/2)
-    if window_size%2 !=0:
-        add_back += 1
+    add_back = window_size - add_front
     back_index = center_index + add_back
     front_index = center_index - add_front
     last = len(np_sample[0])-1
@@ -272,3 +268,41 @@ def centered_window(np_sample, center_time, window_size):
     window = [np_sample[:3, front_index: back_index]]
     return window
 
+
+def get_window_from_timestamp(np_sample, start_time, window_size):
+    """
+    Description: Creates a window that begins at start_time and has a length = window_size.
+                 Additionally, if the start_time is negative or the window size means
+                 that the window will go out of range of np_sample, this function will 
+                 wrap around and create a window of the same size that is just bounded by
+                 np_sample length
+
+    Args:
+        np_sample -- np array (The full trace as an np array)
+        start_time -- int (Time in nanoseconds that the window should start at)
+        window_size -- int (Size of window)
+
+
+    Return:
+        window -- np_array (Window centered around the given time)
+    """
+    nanos = np_sample[3]
+    start_index = np.argwhere(nanos == start_time)[0][0] 
+    start_i = np.where(nanos == start_time)[0][0] 
+    print("start: ", start_i)
+    add_back = window_size
+    back_index = start_index + add_back
+    front_index = start_index
+    last = len(np_sample[0])-1
+    if (front_index < 0):
+        add_back += abs(front_index)
+        front_index = 0
+        back_index = stat_index + add_back
+    if (back_index > last):
+        add_front = abs(last - back_index) -1
+        back_index = last + 1
+        front_index = start_index - add_front
+        if (front_index < 0):
+            front_index = 0
+    window = [np_sample[:3, front_index: back_index]]
+    return window
