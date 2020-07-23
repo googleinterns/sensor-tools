@@ -155,5 +155,4 @@ def test_get_window_from_timestamp2():
     window_size = 8
     actual_window = wl.get_window_from_timestamp(
         NP_FRONT_WINDOW_LIFT[0], start_timestamp, window_size)
-    print(actual_window)
     assert (expected_window == actual_window).all()

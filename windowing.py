@@ -68,7 +68,7 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
         start_time -- int (Start time in nanos of the lift_windows)
 
      """
-    if (threshold !=0 and divisor !=0):
+    if (threshold != 0 and divisor != 0):
         print("ERROR: Either divisor or threshold need equal to 0 to specify which to use.")
         return -1
     if (threshold != 0):
@@ -260,7 +260,7 @@ def centered_window(np_sample, center_time, window_size):
         front_index = 0
         back_index = center_index + add_back
     if (back_index > last):
-        add_front = abs(last - back_index) + add_front -1
+        add_front = abs(last - back_index) + add_front - 1
         back_index = last + 1
         front_index = center_index - add_front
         if (front_index < 0):
@@ -287,9 +287,8 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
         window -- np_array (Window centered around the given time)
     """
     nanos = np_sample[3]
-    start_index = np.argwhere(nanos == start_time)[0][0] 
-    start_i = np.where(nanos == start_time)[0][0] 
-    print("start: ", start_i)
+    start_index = np.argwhere(nanos == start_time)[0][0]
+    start_i = np.where(nanos == start_time)[0][0]
     add_back = window_size
     back_index = start_index + add_back
     front_index = start_index
@@ -299,7 +298,7 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
         front_index = 0
         back_index = stat_index + add_back
     if (back_index > last):
-        add_front = abs(last - back_index) -1
+        add_front = abs(last - back_index) - 1
         back_index = last + 1
         front_index = start_index - add_front
         if (front_index < 0):
