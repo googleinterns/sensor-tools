@@ -1,5 +1,48 @@
 import numpy as np
 from skimage.util.shape import view_as_windows
+from dataclasses import dataclass
+
+@dataclass
+class Initial_Filtering_Params:
+    window_size: int
+    stride: int
+    divisor: int
+    rows: int 
+
+@dataclass
+class Precise_Filtering_Params:
+    window_size: int
+    stride: int
+    threshold: int
+    rows: int
+
+@dataclass
+class All_Filtering_Params:
+    intial_filtering: Initial_Filtering_Params
+    precise_filtering: Precise_Filtering_Params
+
+
+def dict_to_numpy_array(dictionary):
+    """
+    Description: converts dictionary of raw data to and Numpy array. 
+
+    Args:
+        dictionary -- Dictionary of data to be converted to Numpy array. All the entries
+                      within the keys must be the same length for the Numpy.append function
+                      to work.
+
+    Return:
+        np_array -- np array (Np array the data in dictionary)
+    """
+    np_array = np.array([[]])
+    i = 0
+    for key in dictionary:
+        if (i == 0):
+            np_array = np.array([dictionary[key]])
+        else:
+            np_array = np.append(np_array, [dictionary[key]], axis=0)
+        i += 1
+    return np_array
 
 
 def create_windows_from_dictmatrix(dict_matrix, rows, window_size, stride):
@@ -17,11 +60,8 @@ def create_windows_from_dictmatrix(dict_matrix, rows, window_size, stride):
     Return:
         windowed_data -- np array (Np array of the windowed data)
     """
-    x = dict_matrix['x']
-    y = dict_matrix['y']
-    z = dict_matrix['z']
-    nanos = dict_matrix['nanos']
-    np_data = np.array([x, y, z, nanos], 'd')
+
+    np_data = dict_to_numpy_array(dict_matrix)
     windowed_data = view_as_windows(np_data, (rows, window_size), step=stride)
     return windowed_data
 
@@ -288,7 +328,6 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
     """
     nanos = np_sample[3]
     start_index = np.argwhere(nanos == start_time)[0][0]
-    start_i = np.where(nanos == start_time)[0][0]
     add_back = window_size
     back_index = start_index + add_back
     front_index = start_index
