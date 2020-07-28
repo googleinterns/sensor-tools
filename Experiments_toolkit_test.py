@@ -1,4 +1,4 @@
-import ML_experiments as mle
+import Experiments_toolkit as extk
 import numpy as np
 import pytest
 import pytest_diff
@@ -7,7 +7,7 @@ import pytest_diff
 def test_create_train_test_validation():
     MYDATA = {"pos": [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]],
               "neg": [[10], [20], [30], [40], [50], [60], [70], [80], [90], [100]]}
-    actual_train, actual_test, actual_validation = mle.create_train_test_validation(
+    actual_train, actual_test, actual_validation = extk.create_train_test_validation(
         MYDATA, "pos", "neg", 0.6, 0.2, 0.2)
 
     actual_train_pos = np.array(actual_train["pos"])
@@ -29,3 +29,12 @@ def test_create_train_test_validation():
     assert (expected_test_neg == actual_test_neg).all()
     assert (expected_validation_pos == actual_validation_pos).all()
     assert (expected_validation_neg == actual_validation_neg).all()
+
+def test_get_np_X_Y():
+    CAT1 = [1,2,3,4,5,6,7,8,9,10]
+    CAT2 = [10,20,30,40,50,60,70,80]
+    length = 5
+    expected_Y = [1,1,1,1,1,0,0,0,0,0]
+    actual_X, actual_Y = extk.get_np_X_Y(CAT1, CAT2, length)
+    assert (expected_Y == actual_Y).all()
+    assert len(actual_X) == 2 * length
