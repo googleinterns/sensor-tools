@@ -18,7 +18,7 @@ class Precise_Filtering_Params:
 
 @dataclass
 class All_Filtering_Params:
-    intial_filtering: Initial_Filtering_Params
+    initial_filtering: Initial_Filtering_Params
     precise_filtering: Precise_Filtering_Params
 
 
@@ -123,7 +123,7 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
         if (indices.size == 0):
             return None
         index_of_start = indices[0]
-        start_time = windows[index_of_start][0][3][0]
+        start_time = windows[index_of_start][0][-1][0]
         return start_time
 
 
@@ -169,8 +169,8 @@ def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
                    windowed_data that meet the variance threshold level)
     """
     windows = windowed_data[0]
-    windows_no_nanos = windows[:, :3]
-    variances = np.var(windows_no_nanos, axis=2, ddof=1)
+    windows_no_time = windows[:, :-1]
+    variances = np.var(windows_no_time, axis=2, ddof=1)
     var_sum = np.sum(variances, axis=1)
     if divisor == 0:
         variance_threshold = threshold
@@ -206,13 +206,13 @@ def find_precise_start_time(lift_windows, rows,
     return start_time
 
 
-def initial_find_lift(sample, rows, window_size, stride, divisor):
+def initial_find_lift(sample, rows, window_size, stride, divisor): #################################sample should be np.array########
     """
     Description: Finds set of windows whose variance meets a
                          threshold indicating it contains part of the 'lift'
 
     Args:
-        sample -- Dictionary matrix with the x, y, z, and nanos data points
+        sample -- np array (Numpy array where the last row is time steps)
         rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
         window_size -- int (# of samples within one window when creating the windows)
         stride -- int (# of smaples in between the start of each window)
@@ -221,8 +221,7 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
     Return:
         lift_windows -- np array (an array of windows that meet the variance threshold)
     """
-    windowed_data = create_windows_from_dictmatrix(
-        sample, rows, window_size, stride)
+    windowed_data = view_as_windows(sample, (rows, window_size), stride)
     return_lift_windows = True
     threshold = 0
     lift_windows = find_lift_windows(
@@ -242,9 +241,9 @@ def cropped_np(np_sample, start, end):
         Return:
             cropped -- np array (a np array from start to end time in nanos)
         """
-    nanos = np_sample[3]
-    start_index = np.where(nanos == start)
-    end_index = np.where(nanos == end)
+    time = np_sample[-1]
+    start_index = np.where(time == start)
+    end_index = np.where(time == end)
     cropped = [np_sample[:,  start_index[0][0]:end_index[0][0] + 1]]
     return cropped
 
@@ -288,8 +287,8 @@ def centered_window(np_sample, center_time, window_size):
     Return:
         window -- np_array (Window centered around the given time)
     """
-    nanos = np_sample[3]
-    center_index = np.argwhere(nanos == center_time)[0][0]
+    time = np_sample[-1]
+    center_index = np.argwhere(time == center_time)[0][0]
     add_front = int(window_size/2)
     add_back = window_size - add_front
     back_index = center_index + add_back
@@ -305,7 +304,7 @@ def centered_window(np_sample, center_time, window_size):
         front_index = center_index - add_front
         if (front_index < 0):
             front_index = 0
-    window = [np_sample[:3, front_index: back_index]]
+    window = [np_sample[:-1, front_index: back_index]]
     return window
 
 
@@ -326,8 +325,8 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
     Return:
         window -- np_array (Window centered around the given time)
     """
-    nanos = np_sample[3]
-    start_index = np.argwhere(nanos == start_time)[0][0]
+    time = np_sample[-1]
+    start_index = np.argwhere(time == start_time)[0][0]
     add_back = window_size
     back_index = start_index + add_back
     front_index = start_index
@@ -342,5 +341,5 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
         front_index = start_index - add_front
         if (front_index < 0):
             front_index = 0
-    window = [np_sample[:3, front_index: back_index]]
+    window = [np_sample[:-1, front_index: back_index]]
     return window

@@ -1,4 +1,4 @@
-import windowing as w
+import windowing as wl
 import numpy as np
 from skimage.util.shape import view_as_windows
 import seaborn as sns
@@ -76,35 +76,32 @@ def preprocess_data(DATA, rows, filtering_params, window_size, offset):
                                 these windows (numpy arrays) into a dictionary.
 
        Args:
-           DATA -- dict (Dictionary of keys and within the keys are the 3D data samples)
-           rows -- int (Number of rows in the data)
-           filtering_params -- All_Filtering_Params (Dataclass found in windowing.py that 
+        	DATA -- np array (Numpy array where the last row is time steps)
+            rows -- int (Number of rows in the data)
+            filtering_params -- All_Filtering_Params (Dataclass found in windowing.py that 
                                                         stores important parameters for the 2 steps involved with 
                                                         finding the precise start and end time of a lift in the data)
             window_size -- int (Window size of the trace to be saved into the dictionary that will be
                                                 returned)
-                offset -- int (Number to add to the predicted start time of the lift from where the window
+            offset -- int (Number to add to the predicted start time of the lift from where the window
                                                 will start at)
 
        Return:
            windowed_data_dictionary -- dict (Dictionary that stores the windows under the "windows" key)
            """
     windowed_data_dictionary = {"windows": []}
-    for key in DATA:
-        for j in range(len(DATA[key])):
-            sample = DATA[key][j]
-            np_sample = dict_to_np(sample)
-            lift_windows = wl.initial_find_lift(
-                sample, rows, filtering_params.initial_filtering.window_size, filtering_params.initial_filtering.stride, filtering_params.initial_filtering.divisor)
-            if len(lift_windows) > 0:
-                start_time, end = get_start_time(
-                    lift_windows, rows, filtering_params.precise_filtering.window_size, filtering_params.precise_filtering.stride, filtering_params.precise_filtering.threshold)
-                cropped = wl.cropped_np(np_sample, start_time, end)
-                pos_window = wl.get_window_from_timestamp(
-                    np_sample, start_time + offset, window_size)
-                if len(pos_window[0][0]) != SIZE:
-                    continue
-                windowed_data_dictionary["windows"].extend(pos_window)
+    for j in range(len(DATA)):
+        sample = DATA[j]
+        lift_windows = wl.initial_find_lift(
+            sample, rows, filtering_params.initial_filtering.window_size, filtering_params.initial_filtering.stride, filtering_params.initial_filtering.divisor)
+        if len(lift_windows) > 0:
+            start_time, end_time = wl.get_start_time(
+                lift_windows, rows, filtering_params.precise_filtering.window_size, filtering_params.precise_filtering.stride, filtering_params.precise_filtering.threshold)
+            pos_window = wl.get_window_from_timestamp(
+                sample, start_time + offset, window_size)
+            if len(pos_window[0][0]) != window_size:
+                continue
+            windowed_data_dictionary["windows"].extend(pos_window)
     return windowed_data_dictionary
 
 
@@ -118,9 +115,9 @@ def get_np_X_Y(x, y, length):
            length -- int Number of samples in the numpy array to be returned 
 
        Return:
-           X -- np array (Numpy array where the first half of the data points come from x and second
+            X -- np array (Numpy array where the first half of the data points come from x and second
                                           half comes from y)
-           y -- np array (Numpy array with length = length with binary labels (1, 0) for the differetn x, y 
+            y -- np array (Numpy array with length = length with binary labels (1, 0) for the differetn x, y 
                                           data points)
            """
     len1 = len(x)
@@ -166,25 +163,37 @@ def preprocess_with_augmentation(DATA, dictionary, pos_key, augmentation_functio
             window = same_window_size(np_sample[:3], size, 10)
             transpose = window.transpose(0, 2, 1)
             for i in range(len(transpose)):
-                jittering = augmentation_function(transpose[i], sigma)
-                dictionary[pos_key].extend([jittering])
+                augmented = augmentation_function(transpose[i], sigma)
+                dictionary[pos_key].extend([augmented])
     return dictionary
 
+def DA_Rotation_specific(X, angle_low, angle_high, axis):
+    axis = np.array(axis)
+    angle = np.random.uniform(low=angle_low, high=angle_high) 
+    return np.matmul(X , axangle2mat(axis,angle))
 
-def scatter_TSNE(tsne_proj, Y, alpha):
-    """
-       Description: Given an np_array outputted from the sklearn t-SNE function, and the corresponding
-                                Y values, plot a scatter plot of the t-SNE points
+def scatter_PCA(X, Y, alpha):
+    pca = PCA(n_components=3)
+    pca_result = pca.fit_transform(X)
+    scatter_plot(pca_result, Y, alpha)
 
-       Args:
-           tsne_proj -- np_array (Np array output from the TSNE function. Shape = (n_samples, n_components))
-           Y -- np_array (Np array for the labels of the data orignially passed into the TSNE function)
-           alpha -- double (Number that determines the transparancy level of the dots on the plot)
 
-     """
+def scatter_ICA(X, Y, alpha):
+    ica = FastICA(n_components=3)
+    ica_result = ica.fit_transform(X)
+    scatter_plot(ica_result, Y, alpha)
+
+
+def scatter_TSNE(X, Y, alpha):
+    RS = 20150101
+    TSNE_proj = TSNE(random_state=RS, n_components=3).fit_transform(X)
+    scatter_plot(TSNE_proj, Y, alpha)
+
+
+def scatter_plot(result, Y, alpha):
     df_subset = {"negative": [], "positive": []}
-    df_subset['positive'] = tsne_proj[:, 0]
-    df_subset['negative'] = tsne_proj[:, 1]
+    df_subset['positive'] = result[:, 0]
+    df_subset['negative'] = result[:, 1]
     df_subset['y'] = Y
     plt.figure(figsize=(10, 10))
     sns.scatterplot(

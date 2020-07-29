@@ -10,6 +10,11 @@ WINDOWED_DATA = [[[[1, 1, 1, 1, 1], [1, 1, 1, 1, 1, ], [1, 1, 1, 1, 1], [1, 2, 3
     [20, 20, 1, 1, 1], [20, 20, 1, 1, 1], [20, 20, 1, 1, 1], [6, 7, 8, 9, 10]]]]
 NP_WINDOWED_DATA = np.array(WINDOWED_DATA, 'd')
 
+def test_dict_to_numpy_array():
+    expected_np = np.array([[1,1,1,1,1,20,20,1,1,1],[1,1,1,1,1,20,20,1,1,1],[1,1,1,1,1,20,20,1,1,1],[1,2,3,4,5,6,7,8,9,10]])
+
+    actual_np = wl.dict_to_numpy_array(SAMPLE_MATRIX)
+    assert (expected_np==actual_np).all()
 
 def test_create_windows():
 
