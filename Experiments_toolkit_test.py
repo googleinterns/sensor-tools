@@ -39,7 +39,6 @@ def test_proprocess_data():
         0, 0, 0, 0, 10, 20, 40, 1, 10, 10, 10], 'nanos': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
 
     DATA = [wl.dict_to_numpy_array(dict1), wl.dict_to_numpy_array(dict2)]
-    print(DATA)
     rows = 4
     params1 = wl.Initial_Filtering_Params(3, 1, 10, 4)
     params2 = wl.Precise_Filtering_Params(2, 1, 1, 4)
@@ -48,13 +47,15 @@ def test_proprocess_data():
     offset = 0
     expected_dict = {'windows': [[[0, 10],
                                   [0, 10],
-                                  [0, 10]], [[0, 10],
+                                  [0, 10],
+                                  [4, 5]],  [[0, 10],
                                              [0, 10],
-                                             [0, 10]]]}
+                                             [0, 10],
+                                             [4, 5 ]]]}
 
     
     actual_dict = extk.preprocess_data(
-        DATA, rows, filtering_params, window_size, offset)
+        DATA, rows, filtering_params, wl.get_window_from_timestamp,window_size, offset)
     expected_windows = np.array(expected_dict['windows'])
     actual_windows = np.array(actual_dict['windows'])
     assert (expected_windows == actual_windows).all()

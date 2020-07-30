@@ -98,7 +98,7 @@ def test_get_start_time():
 
 def test_centered_window1():
     expected_window = np.array(
-        [[2, 2, 2, 2, 20], [2, 2, 2, 2, 20], [2, 2, 2, 2, 20]])
+        [[2, 2, 2, 2, 20], [2, 2, 2, 2, 20], [2, 2, 2, 2, 20], [30,40,50,60,70]])
     center_timestamp = 50
     window_size = 5
     actual_window = wl.centered_window(
@@ -108,7 +108,7 @@ def test_centered_window1():
 
 def test_centered_window2():
     expected_window = np.array(
-        [[2, 20, 20, 20, 20], [2, 20, 20, 20, 20], [2, 20, 20, 20, 20]])
+        [[2, 20, 20, 20, 20], [2, 20, 20, 20, 20], [2, 20, 20, 20, 20], [60,70,80,90,100]])
     center_timestamp = 90
     window_size = 5
     actual_window = wl.centered_window(
@@ -118,7 +118,7 @@ def test_centered_window2():
 
 def test_centered_window3():
     expected_window = np.array(
-        [[1, 1, 2, 2, 2, 2], [1, 1, 2, 2, 2, 2], [1, 1, 2, 2, 2, 2]])
+        [[1, 1, 2, 2, 2, 2], [1, 1, 2, 2, 2, 2], [1, 1, 2, 2, 2, 2], [10,20,30,40,50,60]])
     center_timestamp = 20
     window_size = 6
     actual_window = wl.centered_window(
@@ -130,7 +130,8 @@ def test_centered_window4():
     expected_window = np.array(
         [[1, 1, 2, 2, 2, 2, 20, 20, 20, 20],
          [1, 1, 2, 2, 2, 2, 20, 20, 20, 20],
-         [1, 1, 2, 2, 2, 2, 20, 20, 20, 20]])
+         [1, 1, 2, 2, 2, 2, 20, 20, 20, 20], 
+         [10,20,30,40,50,60,70,80,90,100]])
     center_timestamp = 50
     window_size = 20
     actual_window = wl.centered_window(
@@ -142,7 +143,8 @@ def test_get_window_from_timestamp():
     expected_window = np.array(
         [[2, 20, 20],
          [2, 20, 20],
-         [2, 20, 20]])
+         [2, 20, 20],
+         [60,70,80]])
     start_timestamp = 60
     window_size = 3
     actual_window = wl.get_window_from_timestamp(
@@ -155,7 +157,8 @@ def test_get_window_from_timestamp2():
     expected_window = np.array(
         [[2,  2,  2,  2, 20, 20, 20, 20],
          [2,  2,  2,  2, 20, 20, 20, 20],
-         [2,  2,  2,  2, 20, 20, 20, 20]])
+         [2,  2,  2,  2, 20, 20, 20, 20],
+         [30,40,50,60,70,80,90, 100]])
     start_timestamp = 60
     window_size = 8
     actual_window = wl.get_window_from_timestamp(

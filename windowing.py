@@ -129,17 +129,15 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
 
 def get_lift_windows_from_indices(indices, windowed_data):
     """
-        Description: Finds the first set of continuous windows from the indices
-                                 array
+        Description: Finds the largest set of continuous windows from the indices
+                     array
 
         Args:
-            windowed_data -- np array
-            indices -- int (Threshold for variance, if using a divisor set to 0
-                                        instead)
+            windowed_data -- np array (Windowed data numpy array)
+            indices -- np array (Numpy array of indices of the windowed data that meet the variance threshold)
 
         Return:
-            lift_windows -- np_array (Array of indices that correspond to windows in
-                           windowed_data that meet the variance threshold level)
+            lift_windows -- np_array (Cropped lift window)
         """
     windows = windowed_data[0]
     if (indices.size <= 1):
@@ -148,8 +146,13 @@ def get_lift_windows_from_indices(indices, windowed_data):
         indices = np.squeeze(indices)
         indices_diff = np.diff(indices)
         end_time = np.argwhere(indices_diff != 1)
+        end_time = np.insert(end_time, 0, 0 )
+        end_time = np.insert(end_time, len(end_time), len(indices)-1)
+        end_time_diff = np.diff(end_time)
+        max_index = np.argmax(end_time_diff)
+        end_time = end_time[max_index :]
         if (end_time.size != 0):
-            indices = indices[:end_time[0][0]+1]
+            indices = indices[end_time[0] + 1 :end_time[1]+1]
     lift_windows = np.take(windows, indices, axis=0)
     return lift_windows
 
@@ -304,7 +307,7 @@ def centered_window(np_sample, center_time, window_size):
         front_index = center_index - add_front
         if (front_index < 0):
             front_index = 0
-    window = [np_sample[:-1, front_index: back_index]]
+    window = [np_sample[:, front_index: back_index]]
     return window
 
 
@@ -341,5 +344,5 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
         front_index = start_index - add_front
         if (front_index < 0):
             front_index = 0
-    window = [np_sample[:-1, front_index: back_index]]
+    window = [np_sample[:, front_index: back_index]]
     return window

@@ -70,13 +70,13 @@ def splitting_up_data(dictionary, dict_key, train, percent_train, test, percent_
     return train, test, validation
 
 
-def preprocess_data(DATA, rows, filtering_params, window_size, offset):
+def preprocess_data(DATA, rows, filtering_params, window_function, window_size, offset):
     """
        Description: Preprocess the data stored in DATA by windowing the traces and saving
                                 these windows (numpy arrays) into a dictionary.
 
        Args:
-        	DATA -- np array (Numpy array where the last row is time steps)
+                DATA -- np array (Numpy array where the last row is time steps)
             rows -- int (Number of rows in the data)
             filtering_params -- All_Filtering_Params (Dataclass found in windowing.py that 
                                                         stores important parameters for the 2 steps involved with 
@@ -97,7 +97,7 @@ def preprocess_data(DATA, rows, filtering_params, window_size, offset):
         if len(lift_windows) > 0:
             start_time, end_time = wl.get_start_time(
                 lift_windows, rows, filtering_params.precise_filtering.window_size, filtering_params.precise_filtering.stride, filtering_params.precise_filtering.threshold)
-            pos_window = wl.get_window_from_timestamp(
+            pos_window = window_function(
                 sample, start_time + offset, window_size)
             if len(pos_window[0][0]) != window_size:
                 continue
@@ -142,7 +142,7 @@ def preprocess_with_augmentation(DATA, dictionary, pos_key, augmentation_functio
                                 to the data.
 
        Args:
-           DATA -- dict (Dictionary of keys and within the keys are the 3D data samples)
+           DATA -- np array (Numpy array where the last row is time steps)
            dictionary -- dict (Dictionary to store augmented traces)
            pos_key -- string (Key in dictionary to store augmented windows) 
            augmentation_function -- function (Desired augmentation function of the form:
@@ -153,24 +153,25 @@ def preprocess_with_augmentation(DATA, dictionary, pos_key, augmentation_functio
        Return:
            dictionary -- dict (Dictionary with augmented windows of size = size in key pos_key)
      """
-    for key in DATA:
-        for j in range(len(DATA[key])):
-            sample = DATA[key][j]
-            np_sample = dict_to_np(sample)
-            length = len(np_sample[0][0])
-            if length < size:
-                continue
-            window = same_window_size(np_sample[:3], size, 10)
-            transpose = window.transpose(0, 2, 1)
-            for i in range(len(transpose)):
-                augmented = augmentation_function(transpose[i], sigma)
-                dictionary[pos_key].extend([augmented])
+    for j in range(len(DATA)):
+        sample = DATA[j]
+        length = len(np_sample[0][0])
+        if length < size:
+            continue
+        window = same_window_size(sample[:-1], size, 10)
+        transpose = window.transpose(0, 2, 1)
+        for i in range(len(transpose)):
+            augmented = augmentation_function(transpose[i], sigma)
+            dictionary[pos_key].extend([augmented])
+
     return dictionary
+
 
 def DA_Rotation_specific(X, angle_low, angle_high, axis):
     axis = np.array(axis)
-    angle = np.random.uniform(low=angle_low, high=angle_high) 
-    return np.matmul(X , axangle2mat(axis,angle))
+    angle = np.random.uniform(low=angle_low, high=angle_high)
+    return np.matmul(X, axangle2mat(axis, angle))
+
 
 def scatter_PCA(X, Y, alpha):
     pca = PCA(n_components=3)
