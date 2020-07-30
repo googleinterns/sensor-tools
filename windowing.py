@@ -209,7 +209,7 @@ def find_precise_start_time(lift_windows, rows,
     return start_time
 
 
-def initial_find_lift(sample, rows, window_size, stride, divisor): #################################sample should be np.array########
+def initial_find_lift(sample, rows, window_size, stride, divisor):
     """
     Description: Finds set of windows whose variance meets a
                          threshold indicating it contains part of the 'lift'

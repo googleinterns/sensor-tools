@@ -6,17 +6,18 @@ import windowing as wl
 
 
 def test_create_train_test_validation():
-    MYDATA = {"pos": [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]],
-              "neg": [[10], [20], [30], [40], [50], [60], [70], [80], [90], [100]]}
+    
+    POSITIVES = np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]])
+    NEGATIVES = np.array([[10], [20], [30], [40], [50], [60], [70], [80], [90], [100]])
     actual_train, actual_test, actual_validation = extk.create_train_test_validation(
-        MYDATA, "pos", "neg", 0.6, 0.2, 0.2)
+        POSITIVES, NEGATIVES, 0.6, 0.2, 0.2)
 
-    actual_train_pos = np.array(actual_train["pos"])
-    actual_train_neg = np.array(actual_train["neg"])
-    actual_test_pos = np.array(actual_test["pos"])
-    actual_test_neg = np.array(actual_test["neg"])
-    actual_validation_pos = np.array(actual_validation["pos"])
-    actual_validation_neg = np.array(actual_validation["neg"])
+    actual_train_pos = np.array(actual_train["positives"])
+    actual_train_neg = np.array(actual_train["negatives"])
+    actual_test_pos = np.array(actual_test["positives"])
+    actual_test_neg = np.array(actual_test["negatives"])
+    actual_validation_pos = np.array(actual_validation["positives"])
+    actual_validation_neg = np.array(actual_validation["negatives"])
 
     expected_train_pos = np.array([[0], [1], [2], [3], [4], [5]])
     expected_train_neg = np.array([[10], [20], [30], [40], [50], [60]])
@@ -45,25 +46,25 @@ def test_proprocess_data():
     filtering_params = wl.All_Filtering_Params(params1, params2)
     window_size = 2
     offset = 0
-    expected_dict = {'windows': [[[0, 10],
-                                  [0, 10],
-                                  [0, 10],
-                                  [4, 5]],  [[0, 10],
-                                             [0, 10],
-                                             [0, 10],
-                                             [4, 5 ]]]}
-
+    expected_dict = [[[[0, 10],
+                      [0, 10],
+                      [0, 10],
+                      [4, 5]],  [[0, 10],
+                                 [0, 10],
+                                 [0, 10],
+                                 [4, 5 ]]]]
     
     actual_dict = extk.preprocess_data(
         DATA, rows, filtering_params, wl.get_window_from_timestamp,window_size, offset)
-    expected_windows = np.array(expected_dict['windows'])
-    actual_windows = np.array(actual_dict['windows'])
+    expected_windows = np.array(expected_dict)
+    actual_windows = np.array(actual_dict)
+
     assert (expected_windows == actual_windows).all()
 
 
 def test_get_np_X_Y():
-    CAT1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    CAT2 = [10, 20, 30, 40, 50, 60, 70, 80]
+    CAT1 = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    CAT2 = np.array([10, 20, 30, 40, 50, 60, 70, 80])
     length = 5
     expected_Y = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
     actual_X, actual_Y = extk.get_np_X_Y(CAT1, CAT2, length)
