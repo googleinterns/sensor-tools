@@ -346,3 +346,9 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
             front_index = 0
     window = [np_sample[:, front_index: back_index]]
     return window
+
+
+def same_window_size(np_sample, start, window_size):
+    rows = len(np_sample)
+    windowed_data = view_as_windows(np_sample, (rows, window_size), 10)
+    return windowed_data[0]

@@ -5,7 +5,7 @@ import seaborn as sns
 sns.set_style('darkgrid')
 sns.set_palette('muted')
 sns.set_context("notebook", font_scale=1.5,
-                rc={"lines.linewidth": 2.5})
+                rc={"lines.linewidth": 1.25})
 
 
 def create_train_test_validation(positives, negatives, percent_train, percent_test, percent_validation):
@@ -103,8 +103,8 @@ def preprocess_data(data, rows, filtering_params, window_function, window_size, 
             if len(pos_window[0][0]) != window_size:
                 continue
             windows.extend(pos_window)
-    windows = np.array(windows)
-    return windows
+    np_windows = np.array(windows)
+    return np_windows
 
 
 def get_np_X_Y(x, y, length):
@@ -135,6 +135,16 @@ def get_np_X_Y(x, y, length):
     y = np.concatenate((pos, neg))
     return X, y
 
+def create_dataset(pos, neg, max_size):
+    pos = pos[:max_size]
+    neg = neg[:max_size]
+    examples = np.concatenate((pos, neg))
+    pos_label = np.ones(len(pos)) 
+    neg_label = np.zeros(len(neg))
+    labels = np.concatenate((pos_label, neg_label))
+    dataset = tf.data.Dataset.from_tensor_slices((examples, labels))
+    return dataset
+
 
 def preprocess_with_augmentation(data, dictionary, pos_key, augmentation_function, sigma, size):
     """
@@ -159,7 +169,6 @@ def preprocess_with_augmentation(data, dictionary, pos_key, augmentation_functio
         length = len(np_sample[0][0])
         if length < size:
             continue
-        window = same_window_size(sample[:-1], size, 10)
         transpose = window.transpose(0, 2, 1)
         for i in range(len(transpose)):
             augmented_trace = augmentation_function(transpose[i], sigma)
@@ -172,23 +181,19 @@ def DA_Rotation_specific(X, angle_low, angle_high, axis):
     angle = np.random.uniform(low=angle_low, high=angle_high)
     return np.matmul(X, axangle2mat(axis, angle))
 
-
-def scatter_PCA(X, Y, alpha):
-    components = len(X[0])
+def scatter_PCA(X, Y, components, alpha):
     pca = PCA(n_components=components)
     pca_result = pca.fit_transform(X)
     scatter_plot(pca_result, Y, alpha)
 
 
-def scatter_ICA(X, Y, alpha):
-    components = len(X[0])
+def scatter_ICA(X, Y, components,alpha):
     ica = FastICA(n_components=components)
     ica_result = ica.fit_transform(X)
     scatter_plot(ica_result, Y, alpha)
 
 
-def scatter_TSNE(X, Y, alpha):
-    components = len(X[0])
+def scatter_TSNE(X, Y, components, alpha):
     RS = 20150101
     TSNE_proj = TSNE(random_state=RS, n_components=components).fit_transform(X)
     scatter_plot(TSNE_proj, Y, alpha)
