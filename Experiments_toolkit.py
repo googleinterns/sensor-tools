@@ -175,12 +175,6 @@ def preprocess_add_augmentation(data, augmentation_function, sigma):
     return augmented
 
 
-def DA_Rotation_specific(X, angle_low, angle_high, axis):
-    axis = np.array(axis)
-    angle = np.random.uniform(low=angle_low, high=angle_high)
-    return np.matmul(X, axangle2mat(axis, angle))
-
-
 def scatter_PCA(X, Y, components, alpha):
     pca = PCA(n_components=components)
     pca_result = pca.fit_transform(X)
