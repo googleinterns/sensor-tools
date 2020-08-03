@@ -90,13 +90,13 @@ def preprocess_data(data, rows, filtering_params, window_function, window_size, 
     for j in range(len(data)):
         sample = data[j]
         lift_windows = wl.initial_find_lift(
-            sample, rows, filtering_params.initial_filtering.window_size, 
-            filtering_params.initial_filtering.stride, 
+            sample, rows, filtering_params.initial_filtering.window_size,
+            filtering_params.initial_filtering.stride,
             filtering_params.initial_filtering.divisor)
         if len(lift_windows) > 0:
             start_time, end_time = wl.get_start_time(
-                lift_windows, rows, filtering_params.precise_filtering.window_size, 
-                filtering_params.precise_filtering.stride, 
+                lift_windows, rows, filtering_params.precise_filtering.window_size,
+                filtering_params.precise_filtering.stride,
                 filtering_params.precise_filtering.threshold)
             pos_window = window_function(
                 sample, start_time + offset, window_size)
@@ -135,24 +135,25 @@ def get_np_X_Y(x, y, length):
     y = np.concatenate((pos, neg))
     return X, y
 
+
 def create_dataset(pos, neg, max_size):
     pos = pos[:max_size]
     neg = neg[:max_size]
     examples = np.concatenate((pos, neg))
-    pos_label = np.ones(len(pos)) 
+    pos_label = np.ones(len(pos))
     neg_label = np.zeros(len(neg))
     labels = np.concatenate((pos_label, neg_label))
     dataset = tf.data.Dataset.from_tensor_slices((examples, labels))
     return dataset
 
 
-def preprocess_with_augmentation(data, dictionary, pos_key, augmentation_function, sigma, size):
+def preprocess_add_augmentation(data, augmentation_function, sigma):
     """
        Description: Iterate over DATA and proprocess the traces by adding an augmentation function
                                 to the data.
 
        Args:
-           data -- np array (Numpy array where the last row is time steps, [(sensor_dims + 1), num_samples])
+           data -- list (List of numpy array where the last row is time steps, [(sensor_dims + 1), num_samples])
            dictionary -- dict (Dictionary to store augmented traces)
            pos_key -- string (Key in dictionary to store augmented windows) 
            augmentation_function -- function (Desired augmentation function of the form:
@@ -166,13 +167,11 @@ def preprocess_with_augmentation(data, dictionary, pos_key, augmentation_functio
     augmented = []
     for j in range(len(data)):
         sample = data[j]
-        length = len(np_sample[0][0])
-        if length < size:
-            continue
-        transpose = window.transpose(0, 2, 1)
-        for i in range(len(transpose)):
-            augmented_trace = augmentation_function(transpose[i], sigma)
-            augmented.extend(augmented_trace)
+        sample = sample[:-1]
+        transposed = sample.transpose()
+        augmented_trace = augmentation_function(transposed, sigma)
+        augmented_trace = augmented_trace.transpose()
+        augmented.extend([augmented_trace])
     return augmented
 
 
@@ -181,13 +180,14 @@ def DA_Rotation_specific(X, angle_low, angle_high, axis):
     angle = np.random.uniform(low=angle_low, high=angle_high)
     return np.matmul(X, axangle2mat(axis, angle))
 
+
 def scatter_PCA(X, Y, components, alpha):
     pca = PCA(n_components=components)
     pca_result = pca.fit_transform(X)
     scatter_plot(pca_result, Y, alpha)
 
 
-def scatter_ICA(X, Y, components,alpha):
+def scatter_ICA(X, Y, components, alpha):
     ica = FastICA(n_components=components)
     ica_result = ica.fit_transform(X)
     scatter_plot(ica_result, Y, alpha)
