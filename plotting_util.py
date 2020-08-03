@@ -1,7 +1,7 @@
 import seaborn as sns
-
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA, FastICA
+
 
 def scatter_PCA(X, Y, components, alpha):
     pca = PCA(n_components=components)
@@ -25,7 +25,7 @@ def scatter_plot(result, Y, alpha):
     sns.set_style('darkgrid')
     sns.set_palette('muted')
     sns.set_context("notebook", font_scale=1.5,
-                rc={"lines.linewidth": 1.25})
+                    rc={"lines.linewidth": 1.25})
     df_subset = {"negative": [], "positive": []}
     df_subset['positive'] = result[:, 0]
     df_subset['negative'] = result[:, 1]

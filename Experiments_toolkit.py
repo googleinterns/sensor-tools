@@ -1,11 +1,6 @@
 import windowing as wl
 import numpy as np
 from skimage.util.shape import view_as_windows
-import seaborn as sns
-sns.set_style('darkgrid')
-sns.set_palette('muted')
-sns.set_context("notebook", font_scale=1.5,
-                rc={"lines.linewidth": 1.25})
 
 
 def create_train_test_validation(positives, negatives, percent_train, percent_test, percent_validation):
