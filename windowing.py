@@ -66,24 +66,24 @@ def create_windows_from_dictmatrix(dict_matrix, rows, window_size, stride):
     return windowed_data
 
 
-def find_initial_lift_times(lift_windows, rows):
-    """
-    Description: Returns the start and end times from lift_windows np array
+def find_initial_activity_times(activity_windows, rows): 
+    """ 
+    Description: Returns the start and end times from activity_windows np array
 
     Args:
-        lift_windows -- np array
+        activity_windows -- np array
         rows -- int (Number of rows in a trace)
 
     Return:
         start -- int (Start time in nanos)
         end -- int (End time in nanos)
     """
-    start = lift_windows[0][rows-1][0]
-    end = lift_windows[-1][-1][-1]
+    start = activity_windows[0][rows-1][0]
+    end = activity_windows[-1][-1][-1]
     return start, end
 
 
-def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
+def find_activity_windows(windowed_data, divisor, threshold, return_activity_windows):
     """
     Description: Takes the windowed data and calculates variance for each window.
                  Then calculates variance threshold and returns an np array of
@@ -97,15 +97,15 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
                    Threshold = (max variance)/divisor)
         threshold -- int (Used as the variance threshold. If using a divisor to
                           find the variance threshold, leave threshold = 0)
-        return_lift_windows -- boolean: (True:  will return a list of
-                                         lift_windows that meet the variance threshold)
-                                        (False: will return just the start time of the lift_windows)
+        return_activity_windows -- boolean: (True:  will return a list of
+                                         activity_windows that meet the variance threshold)
+                                        (False: will return just the start time of the activity_windows)
 
     Return:
-        lift_windows -- np array (A np_array of windows that meet the desired
+        activity_windows -- np array (A np_array of windows that meet the desired
                                   threshold)
         -- or --
-        start_time -- int (Start time in nanos of the lift_windows)
+        start_time -- int (Start time in nanos of the activity_windows)
 
      """
     if (threshold != 0 and divisor != 0):
@@ -117,8 +117,8 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
         windowed_data, threshold, divisor)
 
     windows = windowed_data[0]
-    if (return_lift_windows):
-        return get_lift_windows_from_indices(indices, windowed_data)
+    if (return_activity_windows):
+        return get_activity_windows_from_indices(indices, windowed_data)
     else:
         if (indices.size == 0):
             return None
@@ -127,7 +127,7 @@ def find_lift_windows(windowed_data, divisor, threshold, return_lift_windows):
         return start_time
 
 
-def get_lift_windows_from_indices(indices, windowed_data):
+def get_activity_windows_from_indices(indices, windowed_data):
     """
         Description: Finds the largest set of continuous windows from the indices
                      array
@@ -137,7 +137,7 @@ def get_lift_windows_from_indices(indices, windowed_data):
             indices -- np array (Numpy array of indices of the windowed data that meet the variance threshold)
 
         Return:
-            lift_windows -- np_array (Cropped lift window)
+            activity_windows -- np_array (Cropped activity window)
         """
     windows = windowed_data[0]
     if (indices.size <= 1):
@@ -153,8 +153,8 @@ def get_lift_windows_from_indices(indices, windowed_data):
         end_time = end_time[max_index :]
         if (end_time.size != 0):
             indices = indices[end_time[0] + 1 :end_time[1]+1]
-    lift_windows = np.take(windows, indices, axis=0)
-    return lift_windows
+    activity_windows = np.take(windows, indices, axis=0)
+    return activity_windows
 
 
 def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
@@ -183,36 +183,36 @@ def find_indices_that_meet_threshold(windowed_data, threshold, divisor):
     return indices
 
 
-def find_precise_start_time(lift_windows, rows,
+def find_precise_start_time(activity_windows, rows,
                             window_size, stride, variance_threshold):
     """
     Description: Finds a more precise start time by creating much smaller windows
-                 within the first window found to contain part of the lift ouputted
-                 from initial_find_lift.
+                 within the first window found to contain part of the activity ouputted
+                 from initial_find_activity.
     Args:
-        lift_windows -- np array
+        activity_windows -- np array
         rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
         window_size -- int (# of samples within one window when creating the windows)
         stride -- int (# of smaples in between the start of each window)
         variane_threshold -- int (Variance threshold that determines
-                             wether the current window is part of the lift)
+                             wether the current window is part of the activity)
 
     Return:
-        start_time = int (more precise start time of the lift in nanoseconds)
+        start_time = int (more precise start time of the activity in nanoseconds)
     """
-    front = lift_windows[0]
+    front = activity_windows[0]
     divisor = 0
-    return_lift_windows = False
+    return_activity_windows = False
     windowed_data = view_as_windows(front, (rows, window_size), stride)
-    start_time = find_lift_windows(
-        windowed_data, divisor, variance_threshold, return_lift_windows)
+    start_time = find_activity_windows(
+        windowed_data, divisor, variance_threshold, return_activity_windows)
     return start_time
 
 
-def initial_find_lift(sample, rows, window_size, stride, divisor):
+def initial_find_activity(sample, rows, window_size, stride, divisor):
     """
     Description: Finds set of windows whose variance meets a
-                         threshold indicating it contains part of the 'lift'
+                         threshold indicating it contains part of the 'activity'
 
     Args:
         sample -- np array (Numpy array where the last row is time steps)
@@ -222,14 +222,14 @@ def initial_find_lift(sample, rows, window_size, stride, divisor):
         divisor -- int (Will be used to find variacne threshold : threshold = (max variance)/divisor)
 
     Return:
-        lift_windows -- np array (an array of windows that meet the variance threshold)
+        activity_windows -- np array (an array of windows that meet the variance threshold)
     """
     windowed_data = view_as_windows(sample, (rows, window_size), stride)
-    return_lift_windows = True
+    return_activity_windows = True
     threshold = 0
-    lift_windows = find_lift_windows(
-        windowed_data, divisor, threshold, return_lift_windows)
-    return lift_windows
+    activity_windows = find_activity_windows(
+        windowed_data, divisor, threshold, return_activity_windows)
+    return activity_windows
 
 
 def cropped_np(np_sample, start, end):
@@ -251,25 +251,25 @@ def cropped_np(np_sample, start, end):
     return cropped
 
 
-def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
+def get_start_time(activity_windows, rows, window_size, stride, variance_threshold):
     """
         Description: Returns the precise start time
 
         Args:
-            lift_windows -- np_array (Np array of the lift windows)
+            activity_windows -- np_array (Np array of the activity windows)
             rows -- int (# of rows within a trace (ex: x, y, z, nanos => 4 rows))
             window_size -- int (# of samples within one window when creating the windows)
             stride -- int (# of samples to jump before creating next window)
             variance_threshold -- int (Variance threshold that determines
-                                  wether the current window is part of the lift)
+                                  wether the current window is part of the activity)
 
         Return:
             start_time -- int (start time in nanos)
             end -- int (end time in nanos)
         """
-    start, end = find_initial_lift_times(lift_windows, rows)
+    start, end = find_initial_activity_times(activity_windows, rows)
     precise_start = find_precise_start_time(
-        lift_windows, rows, window_size, stride, variance_threshold)
+        activity_windows, rows, window_size, stride, variance_threshold)
     if (precise_start != None):
         start_time = precise_start
     else:
@@ -279,7 +279,7 @@ def get_start_time(lift_windows, rows, window_size, stride, variance_threshold):
 
 def centered_window(np_sample, center_time, window_size):
     """
-    Description: Creates a window centered around the center_time of the lift
+    Description: Creates a window centered around the center_time of the activity
 
     Args:
         np_sample -- np array (The full trace as an np array)

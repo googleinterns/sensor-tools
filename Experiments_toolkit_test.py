@@ -1,14 +1,14 @@
 import Experiments_toolkit as extk
 import numpy as np
+import tensorflow.data as tfdata
 import pytest
 import pytest_diff
 import windowing as wl
 
+POSITIVES = np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]])
+NEGATIVES = np.array([[10], [20], [30], [40], [50], [60], [70], [80], [90], [100]])
 
 def test_create_train_test_validation():
-    
-    POSITIVES = np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]])
-    NEGATIVES = np.array([[10], [20], [30], [40], [50], [60], [70], [80], [90], [100]])
     actual_train, actual_test, actual_validation = extk.create_train_test_validation(
         POSITIVES, NEGATIVES, 0.6, 0.2, 0.2)
 
@@ -58,9 +58,30 @@ def test_proprocess_data():
         DATA, rows, filtering_params, wl.get_window_from_timestamp,window_size, offset)
     expected_windows = np.array(expected_dict)
     actual_windows = np.array(actual_dict)
-
     assert (expected_windows == actual_windows).all()
 
+def test_create_dataset():
+    seed = 0
+    pos = POSITIVES
+    neg = NEGATIVES
+    np.random.shuffle(pos)
+    np.random.shuffle(neg)
+    label_pos = np.ones(len(POSITIVES))
+    label_neg = np.zeros(len(NEGATIVES))
+    labels = np.concatenate((label_pos, label_neg))
+    examples = np.concatenate((POSITIVES, NEGATIVES))
+    max_size = -1
+    expected_dataset = tfdata.Dataset.from_tensor_slices((examples, labels))
+    actual_dataset = extk.create_dataset(POSITIVES, NEGATIVES, -1)
+    expected_set = set(())
+    for e in expected_dataset.as_numpy_iterator():
+        pairing = str(e[0][0]) + ", " + str(e[1])
+        expected_set.add(pairing)
+    actual_set = set(())
+    for a in actual_dataset.as_numpy_iterator():
+        pairing = str(a[0][0]) + ", " + str(a[1])
+        actual_set.add(pairing)
+    assert actual_set == expected_set
 
 def test_get_np_X_Y():
     CAT1 = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])

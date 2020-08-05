@@ -1,6 +1,7 @@
 import windowing as wl
 import numpy as np
 from skimage.util.shape import view_as_windows
+import tensorflow.data as tfdata
 
 
 def create_train_test_validation(positives, negatives, percent_train, percent_test, percent_validation):
@@ -68,15 +69,16 @@ def preprocess_data(data, rows, filtering_params, window_function, window_size, 
                                 these windows (numpy arrays) into a dictionary.
 
        Args:
-            data -- list (List of numpy arrays where the last row is time steps, [(sensor_dims + 1), num_samples])
+            data -- list (List of numpy arrays where the last row is time steps, 
+            			  [(sensor_dims + 1), num_samples])
             rows -- int (Number of rows in the data)
             filtering_params -- All_Filtering_Params (Dataclass found in windowing.py that 
-                                                        stores important parameters for the 2 steps involved with 
-                                                        finding the precise start and end time of a lift in the data)
-            window_size -- int (Window size of the trace to be saved into the dictionary that will be
-                                                returned)
-            offset -- int (Number to add to the predicted start time of the lift from where the window
-                                                will start at)
+                                stores important parameters for the 2 steps involved with 
+                                finding the precise start and end time of a activity in the data)
+            window_size -- int (Window size of the trace to be saved into the
+            				    dictionary that will be returned)
+            offset -- int (Number to add to the predicted start time of the 
+            			   activity from where the window will start at)
 
        Return:
            windows-- int[] (Array of the windows cropped by the window_function)
@@ -84,13 +86,13 @@ def preprocess_data(data, rows, filtering_params, window_function, window_size, 
     windows = []
     for j in range(len(data)):
         sample = data[j]
-        lift_windows = wl.initial_find_lift(
+        activity_windows = wl.initial_find_activity(
             sample, rows, filtering_params.initial_filtering.window_size,
             filtering_params.initial_filtering.stride,
             filtering_params.initial_filtering.divisor)
-        if len(lift_windows) > 0:
+        if len(activity_windows) > 0:
             start_time, end_time = wl.get_start_time(
-                lift_windows, rows, filtering_params.precise_filtering.window_size,
+                activity_windows, rows, filtering_params.precise_filtering.window_size,
                 filtering_params.precise_filtering.stride,
                 filtering_params.precise_filtering.threshold)
             pos_window = window_function(
@@ -104,18 +106,20 @@ def preprocess_data(data, rows, filtering_params, window_function, window_size, 
 
 def get_np_X_Y(x, y, length):
     """
-       Description: Create X and Y numpy arrays desired length of random samples from lists of windowed data, x and y
+       Description: Create X and Y numpy arrays desired length of random 
+       				samples from lists of windowed data, x and y
 
        Args:
            x -- np_array (Numpy array of one category numpy arrays with the same shape)
-           y -- np_array (Numpy array of another category numpy arrays with the same shape as x numpy arrays)
+           y -- np_array (Numpy array of another category numpy arrays with 
+           				  the same shape as x numpy arrays)
            length -- int Number of samples in the numpy array to be returned 
 
        Return:
-            X -- np array (Numpy array where the first half of the data points come from x and second
-                                          half comes from y)
-            y -- np array (Numpy array with length = length with binary labels (1, 0) for the differetn x, y 
-                                          data points)
+            X -- np array (Numpy array where the first half of the data points
+            			  come from x and second half comes from y)
+            y -- np array (Numpy array with length = length with binary labels 
+            			   (1, 0) for the differetn x, y data points)
            """
     len1 = len(x)
     len2 = len(y)
@@ -131,14 +135,32 @@ def get_np_X_Y(x, y, length):
     return X, y
 
 
-def create_dataset(pos, neg, max_size):
-    pos = pos[:max_size]
-    neg = neg[:max_size]
+def create_dataset(pos, neg, max_samples):
+    """
+       Description: Create a tf.data.Dataset composed of samples from the pos and neg list 
+
+       Args:
+           pos -- np array (Numpy arrays of positive windows, [(sensor_dims), num_samples])
+           neg -- np arrya (Numpy arrays of negative windows, [(sensor_dims), num_samples])
+           max_size -- int (number of samples to be taken from pos and neg to
+                                                be used in the dataset. If max_size < 0, then all 
+                                                samples from both pos and neg will be used) 
+
+       Return:
+           dataset -- tf.data.Dataset (TensorFlow dataset composed of the 
+                                  positive and negative lists of data passed into the 
+                                  function with the corresponding labels)
+     """
+    np.random.shuffle(pos)
+    np.random.shuffle(neg)
+    if (max_samples > 0):
+        pos = pos[:max_samples]
+        neg = neg[:max_samples]
     examples = np.concatenate((pos, neg))
     pos_label = np.ones(len(pos))
     neg_label = np.zeros(len(neg))
     labels = np.concatenate((pos_label, neg_label))
-    dataset = tf.data.Dataset.from_tensor_slices((examples, labels))
+    dataset = tfdata.Dataset.from_tensor_slices((examples, labels))
     return dataset
 
 
@@ -152,7 +174,7 @@ def preprocess_add_augmentation(data, augmentation_function, sigma):
            dictionary -- dict (Dictionary to store augmented traces)
            pos_key -- string (Key in dictionary to store augmented windows) 
            augmentation_function -- function (Desired augmentation function of the form:
-                                                                                        augment(np_array data, int sigma))
+                                              augment(np_array data, int sigma))
            sigma -- double (Level of augment to be passed to the augmentation function )
            size -- int (Window size of traces to be stored in dictionary)
 
@@ -168,5 +190,3 @@ def preprocess_add_augmentation(data, augmentation_function, sigma):
         augmented_trace = augmented_trace.transpose()
         augmented.extend([augmented_trace])
     return augmented
-
-
