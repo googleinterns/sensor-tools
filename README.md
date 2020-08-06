@@ -32,4 +32,4 @@ A tutorial for how to use the libraries and their capabilites can be found here.
     * TSNE
     * PCA
     * FastICA
-* from skimage.util.shape import view_as_windows
+* ```from skimage.util.shape import view_as_windows```
