@@ -16,9 +16,13 @@ sensor data. Specifically, on the impact that using different windows of the
 data while training a model to recognize whether a given activity was taking
 place in the window. 
 
-## **Dependencies**
+## Tutorial
+
+A tutorial for how to use the libraries and their capabilites can be found here. The tutorial explores the how to use these libraries on an academic dataset of simulated smart watch data from [this study](https://archive.ics.uci.edu/ml/datasets/Dataset+for+ADL+Recognition+with+Wrist-worn+Accelerometer).
+
+## Dependencies
  
- Most of these dependencies can be installed using ```pip``` excpet DataAugmentation.py. 
+ Most of these dependencies can be installed using ```pip``` excpet ```DataAugmentation.py``` which can be found [here](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py). 
 * [DataAugmentation.py](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
 * numpy
 * matplotlib
