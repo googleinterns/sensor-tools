@@ -18,6 +18,7 @@ place in the window.
 
 ## **Dependencies**
  
+ Most of these dependencies can be installed using ```pip``` excpet DataAugmentation.py. 
 * [DataAugmentation.py](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
 * numpy
 * matplotlib
