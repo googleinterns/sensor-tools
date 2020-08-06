@@ -18,7 +18,7 @@ place in the window.
 
 ## Tutorial
 
-A tutorial for how to use the libraries and their capabilites can be found here. The tutorial explores the how to use these libraries on an academic dataset of simulated smart watch data from [this study](https://archive.ics.uci.edu/ml/datasets/Dataset+for+ADL+Recognition+with+Wrist-worn+Accelerometer).
+A tutorial for how to use the libraries and their capabilites can be found **here**. The tutorial explores the how to use these libraries on an academic dataset of simulated smart watch data from [this study](https://archive.ics.uci.edu/ml/datasets/Dataset+for+ADL+Recognition+with+Wrist-worn+Accelerometer).
 
 ## Dependencies
  
@@ -28,6 +28,7 @@ A tutorial for how to use the libraries and their capabilites can be found here.
 * matplotlib
 * TensorFlow
 * seaborn
+* transforms3d
 * sklearn
     * TSNE
     * PCA
