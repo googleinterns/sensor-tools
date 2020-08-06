@@ -1,6 +1,7 @@
-#**Sensore Data Filtering and Augmentation Tools**
+# **Sensore Data Filtering and Augmentation Tools**
 
-##**Objective**
+## **Motivation**
+
 This set of libraries contain various methods to help with sensor data
 filtering, data augmentation, and data preperation of use in Keras and 
 TensorFlow models along with running visualizations such as t-SNE, PCA, and ICA.
@@ -15,7 +16,8 @@ sensor data. Specifically, on the impact that using different windows of the
 data while training a model to recognize whether a given activity was taking
 place in the window. 
 
-##**Dependencies**
+## **Dependencies**
+ 
 * [DataAugmentation.py](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
 * numpy
 * matplotlib
