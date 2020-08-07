@@ -19,17 +19,19 @@ A tutorial for how to use the libraries and their capabilites can be found **her
 ## Dependencies
 
  Most of these dependencies can be installed using ```pip``` except ```DataAugmentation.py``` which can be found [here](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py). 
- For colab ```!pip install package```
+
+To use ```pip``` in Google Colab: ```!pip (command)```
+
 *  Python (3.8.5)
 * [DataAugmentation.py](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
 * numpy (1.18.5)
 * matplotlib (3.2.2)
 * TensorFlow (2.3.0)
 * seaborn (0.10.1)
-* [transforms3d](https://matthew-brett.github.io/transforms3d/index.html)
+* [transforms3d](https://matthew-brett.github.io/transforms3d/index.html)(to install in Colab: ```!pip install transforms3d```
 * scikit-learn (0.23.1)
     * TSNE
     * PCA
     * FastICA
-* ```from skimage.util.shape import view_as_windows```(0.17.2)
-* ```from dataclasses import dataclass```
+* skimage (0.17.2)
+* dataclasses
