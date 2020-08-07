@@ -7,7 +7,7 @@ filtering, data augmentation, and data preperation for use in Keras and
 TensorFlow models along with running visualizations such as t-SNE, PCA, and ICA.
 Some functions from this library rely on a [data augmentation 
 library](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
-found in another repository.  The filtering technique in this library hinge on a
+found in another repository.  The filtering technique in this library hinges on a
 multi-resoultion windowing approach coupled with variance filtering. This
 technique was  orginially developed to determine the start and end time of an
 activity in a given window where the activity. These libraries also grew and
