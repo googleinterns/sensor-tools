@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # **Sensor Data Filtering and Augmentation Tools**
 
 ## **Motivation**
@@ -36,4 +36,7 @@ To use ```pip``` in Google Colab: ```!pip (command)```
     * FastICA
 * skimage (0.17.2)
 * dataclasses
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9e5e5b809e4c1da0b1fd8eb9f2966a3af5742353
