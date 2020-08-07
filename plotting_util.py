@@ -1,7 +1,7 @@
 import seaborn as sns
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA, FastICA
-
+import matplotlib as plt
 
 def scatter_PCA(X, Y, components, alpha):
     """
