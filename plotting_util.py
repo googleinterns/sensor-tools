@@ -69,7 +69,7 @@ def scatter_plot(result, Y, alpha):
     df_subset['1'] = result[:, 0]
     df_subset['2'] = result[:, 1]
     df_subset['y'] = Y
-    plt.figure(figsize=(10, 10))
+    plt.pyplot.figure(figsize = (10,10))
     sns.scatterplot(
         x="2", y="1",
         hue="y",
