@@ -349,6 +349,18 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
 
 
 def same_window_size(np_sample, start, window_size):
+    """
+    Description: Creates windows of given window_size within np_sample
+
+    Args:
+        np_sample -- np array (The full trace as an np array)
+        start -- int (not used but had to be a parameter so this function can 
+                        be used in preprocess_data)
+        window_size -- int (Size of window)
+
+    Return:
+        windowed_data -- np_array (Windows of given size from sample)
+    """
     rows = len(np_sample)
     windowed_data = view_as_windows(np_sample, (rows, window_size), 10)
     return windowed_data[0]
