@@ -348,7 +348,7 @@ def get_window_from_timestamp(np_sample, start_time, window_size):
     return window
 
 
-def same_window_size(np_sample, start, window_size):
+def create_windows_of_size(np_sample, start, window_size):
     """
     Description: Creates windows of given window_size within np_sample
 
