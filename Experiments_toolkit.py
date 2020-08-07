@@ -54,6 +54,7 @@ def splitting_up_data(data, key, train, percent_train, test, percent_test, valid
             test -- dict (Dictionary with percent_test of list)
             validation -- dict (Dictionary with percent_validation of list)
         """
+    np.random.shuffle(data)
     length = len(data)
     train_index = int(length * percent_train)
     test_index = int(length * percent_test)
@@ -103,13 +104,13 @@ def preprocess_data(data, rows, filtering_params, window_function, window_size, 
     return np_windows
 
 
-def get_np_X_Y(x, y, length):
+def get_np_examples_labels(array1, array2, length):
     """
-       Description: Create X and Y numpy arrays desired length of random 
-       				samples (without replacement) from lists of windowed data, x and y
+       Description: Create X and Y numpy arrays each with length = length, and 
+       				a random subject of their respective input arrays
 
        Args:
-           x -- np_array (Numpy array of one category numpy arrays with the same shape)
+           array1 -- np_array (Numpy array of one category numpy arrays with the same shape)
            y -- np_array (Numpy array of another category numpy arrays with 
            				  the same shape as x numpy arrays)
            length -- int Number of samples in the numpy array to be returned 
@@ -117,21 +118,21 @@ def get_np_X_Y(x, y, length):
        Return:
             X -- np array (Numpy array where the first half of the data points
             			  come from x and second half comes from y)
-            y -- np array (Numpy array with length = length with binary labels 
+            labels -- np array (Numpy array with length = length with binary labels 
             			   (1, 0) for the differetn x, y data points)
            """
-    len1 = len(x)
-    len2 = len(y)
+    len1 = len(array1)
+    len2 = len(array2)
     limit = min(len1, len2, length)
     idx = np.random.randint(len1, size=limit)
     idx2 = np.random.randint(len2, size=limit)
-    rnd_x = x[idx]
-    rnd_y = y[idx2]
+    rnd_x = array1[idx]
+    rnd_y = array2[idx2]
     X = np.concatenate((rnd_x, rnd_y))
     pos = np.ones(limit)
     neg = np.zeros(limit)
-    y = np.concatenate((pos, neg))
-    return X, y
+    labels = np.concatenate((pos, neg))
+    return X, labels
 
 
 def create_dataset(pos, neg, max_samples):
@@ -153,32 +154,30 @@ def create_dataset(pos, neg, max_samples):
     np.random.shuffle(pos)
     np.random.shuffle(neg)
     if (max_samples > 0):
-        pos = pos[:max_samples]
-        neg = neg[:max_samples]
-    examples = np.concatenate((pos, neg))
-    pos_label = np.ones(len(pos))
-    neg_label = np.zeros(len(neg))
-    labels = np.concatenate((pos_label, neg_label))
+        examples, labels = get_np_X_Y(pos, neg, max_samples)
+    else:
+	    examples = np.concatenate((pos, neg))
+	    pos_label = np.ones(len(pos))
+	    neg_label = np.zeros(len(neg))
+	    labels = np.concatenate((pos_label, neg_label))
     dataset = tf.data.Dataset.from_tensor_slices((examples, labels))
     return dataset
 
 
 def preprocess_add_augmentation(data, augmentation_function, sigma):
     """
-       Description: Iterate over DATA and proprocess the traces by adding an augmentation function
+       Description: Iterate over data and preprocess the traces by adding an augmentation function
                                 to the data.
 
        Args:
            data -- list (List of numpy array where the last row is time steps, [(sensor_dims + 1), num_samples])
            dictionary -- dict (Dictionary to store augmented traces)
-           pos_key -- string (Key in dictionary to store augmented windows) 
            augmentation_function -- function (Desired augmentation function of the form:
                                               augment(np_array data, int sigma))
            sigma -- double (Level of augmentation to be passed to the augmentation function )
-           size -- int (Window size of traces to be stored in dictionary)
 
        Return:
-           dictionary -- dict (Dictionary with augmented windows of size = size in key pos_key)
+           augmented -- np array (Array of the windows cropped by the window_function))
      """
     augmented = []
     for sample in data:

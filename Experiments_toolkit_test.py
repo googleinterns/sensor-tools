@@ -12,25 +12,25 @@ def test_create_train_test_validation():
     actual_train, actual_test, actual_validation = extk.create_train_test_validation(
         POSITIVES, NEGATIVES, 0.6, 0.2, 0.2)
 
-    actual_train_pos = np.array(actual_train["positives"])
-    actual_train_neg = np.array(actual_train["negatives"])
-    actual_test_pos = np.array(actual_test["positives"])
-    actual_test_neg = np.array(actual_test["negatives"])
-    actual_validation_pos = np.array(actual_validation["positives"])
-    actual_validation_neg = np.array(actual_validation["negatives"])
+    actual_train_pos = len(np.array(actual_train["positives"]))
+    actual_train_neg = len(np.array(actual_train["negatives"]))
+    actual_test_pos = len(np.array(actual_test["positives"]))
+    actual_test_neg = len(np.array(actual_test["negatives"]))
+    actual_validation_pos = len(np.array(actual_validation["positives"]))
+    actual_validation_neg = len(np.array(actual_validation["negatives"]))
 
-    expected_train_pos = np.array([[0], [1], [2], [3], [4], [5]])
-    expected_train_neg = np.array([[10], [20], [30], [40], [50], [60]])
-    expected_test_pos = np.array([[6], [7]])
-    expected_test_neg = np.array([[70], [80]])
-    expected_validation_pos = np.array([[8], [9]])
-    expected_validation_neg = np.array([[90], [100]])
-    assert (expected_train_pos == actual_train_pos).all()
-    assert (expected_train_neg == actual_train_neg).all()
-    assert (expected_test_pos == actual_test_pos).all()
-    assert (expected_test_neg == actual_test_neg).all()
-    assert (expected_validation_pos == actual_validation_pos).all()
-    assert (expected_validation_neg == actual_validation_neg).all()
+    expected_train_pos = len(np.array([[0], [1], [2], [3], [4], [5]]))
+    expected_train_neg = len(np.array([[10], [20], [30], [40], [50], [60]]))
+    expected_test_pos = len(np.array([[6], [7]]))
+    expected_test_neg = len(np.array([[70], [80]]))
+    expected_validation_pos = len(np.array([[8], [9]]))
+    expected_validation_neg = len(np.array([[90], [100]]))
+    assert (expected_train_pos == actual_train_pos)
+    assert (expected_train_neg == actual_train_neg)
+    assert (expected_test_pos == actual_test_pos)
+    assert (expected_test_neg == actual_test_neg)
+    assert (expected_validation_pos == actual_validation_pos)
+    assert (expected_validation_neg == actual_validation_neg)
 
 
 def test_proprocess_data():
@@ -72,7 +72,7 @@ def test_create_dataset():
     examples = np.concatenate((POSITIVES, NEGATIVES))
     max_size = -1
     expected_dataset = tfdata.Dataset.from_tensor_slices((examples, labels))
-    actual_dataset = extk.create_dataset(POSITIVES, NEGATIVES, -1)
+    actual_dataset = extk.create_dataset(POSITIVES, NEGATIVES, max_size)
     expected_set = set(())
     for e in expected_dataset.as_numpy_iterator():
         pairing = str(e[0][0]) + ", " + str(e[1])
