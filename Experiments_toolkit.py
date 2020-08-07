@@ -1,7 +1,7 @@
 import windowing as wl
 import numpy as np
 from skimage.util.shape import view_as_windows
-import tensorflow.data as tfdata
+import tensorflow as tf
 
 
 def create_train_test_validation(positives, negatives, percent_train, percent_test, percent_validation):
@@ -159,7 +159,7 @@ def create_dataset(pos, neg, max_samples):
     pos_label = np.ones(len(pos))
     neg_label = np.zeros(len(neg))
     labels = np.concatenate((pos_label, neg_label))
-    dataset = tfdata.Dataset.from_tensor_slices((examples, labels))
+    dataset = tf.data.Dataset.from_tensor_slices((examples, labels))
     return dataset
 
 

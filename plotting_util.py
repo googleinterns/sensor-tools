@@ -13,8 +13,6 @@ def scatter_PCA(X, Y, components, alpha):
            components -- int (Number of features of data in X) 
            alpha -- double (From [0.0 - 1.0], level of opacity for the dots on the plot)
 
-       Return:
-           **prints scatter PCA graph**
      """
     pca = PCA(n_components=components)
     pca_result = pca.fit_transform(X)
@@ -31,8 +29,6 @@ def scatter_ICA(X, Y, components, alpha):
            components -- int (Number of features of data in X) 
            alpha -- double (From [0.0 - 1.0], level of opacity for the dots on the plot)
 
-       Return:
-           **prints scatter ICA graph**
     """
     ica = FastICA(n_components=components)
     ica_result = ica.fit_transform(X)
@@ -49,8 +45,6 @@ def scatter_TSNE(X, Y, components, alpha):
            components -- int (Number of features of data in X) 
            alpha -- double (From [0.0 - 1.0], level of opacity for the dots on the plot)
 
-       Return:
-           **prints scatter t-SNE graph**
     """
     RS = 20150101
     TSNE_proj = TSNE(random_state=RS, n_components=components).fit_transform(X)
@@ -66,8 +60,6 @@ def scatter_plot(result, Y, alpha):
            Y -- numpy array (Numpy array with labels for data in X)
            alpha -- double (From [0.0 - 1.0], level of opacity for the dots on the plot)
 
-       Return:
-           **prints scatter plot**
     """
     sns.set_style('darkgrid')
     sns.set_palette('muted')
