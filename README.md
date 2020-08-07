@@ -31,3 +31,4 @@ A tutorial for how to use the libraries and their capabilites can be found **her
     * PCA
     * FastICA
 * ```from skimage.util.shape import view_as_windows```(0.17.2)
+* ```from dataclasses import dataclass```
