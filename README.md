@@ -19,6 +19,7 @@ A tutorial for how to use the libraries and their capabilites can be found **her
 ## Dependencies
 
  Most of these dependencies can be installed using ```pip``` except ```DataAugmentation.py``` which can be found [here](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py). 
+ For colab ```!pip install package```
 *  Python (3.8.5)
 * [DataAugmentation.py](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
 * numpy (1.18.5)
