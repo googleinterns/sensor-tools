@@ -28,7 +28,7 @@ To use ```pip``` in Google Colab: ```!pip (command)```
 * matplotlib (3.2.2)
 * TensorFlow (2.3.0)
 * seaborn (0.10.1)
-* [transforms3d](https://matthew-brett.github.io/transforms3d/index.html)(to install in Colab: ```!pip install transforms3d```
+* [transforms3d](https://matthew-brett.github.io/transforms3d/index.html)   (to install in Google Colab: ```!pip install transforms3d```)
 * scikit-learn (0.23.1)
     * TSNE
     * PCA
