@@ -10,7 +10,7 @@ library](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor
 found in another repository.  The filtering technique in this library hinges on a
 multi-resoultion windowing approach coupled with variance filtering. This
 technique was orginially developed to determine the start and end time of an
-activity in a given window where the activity. The library has the capabilty to create different window types for data preprocessing, create training, validation, and testing sets from given percentages, and create tf.data.Dataset from inputted data. 
+activity in a given window where the activity is characterized by increased variance in the sensor data. The library has the capabilty to create different window types for data preprocessing, create training, validation, and testing sets from given percentages, and create tf.data.Dataset from inputted data. 
 
 ## Tutorial
 
