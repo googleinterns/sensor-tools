@@ -1,10 +1,10 @@
-# **Sensore Data Filtering and Augmentation Tools**
+# **Sensor Data Filtering and Augmentation Tools**
 
 ## **Motivation**
 
 This set of libraries contains various methods to help with sensor data
 filtering, data augmentation, and data preparation for use in Keras and 
-TensorFlow models along with computing and then plotting t-SNE, PCA, and ICA calcualtions.
+TensorFlow models along with computing and then plotting t-SNE, PCA, and ICA calculations.
 Some functions from this library rely on a [data augmentation 
 library](https://github.com/maddyarmstrong/Data-Augmentation-For-Wearable-Sensor-Data/blob/master/DataAugmentation.py)
 found in another repository.  The filtering technique in this library hinges on a
@@ -30,5 +30,5 @@ A tutorial for how to use the libraries and their capabilites can be found **her
     * TSNE
     * PCA
     * FastICA
-* skimage (0.17.2)
-* dataclasses
+* ```from skimage.util.shape import view_as_windows```(0.17.2)
+* ```from dataclasses import dataclass```
