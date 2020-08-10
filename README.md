@@ -15,7 +15,7 @@ activity in a given window where the activity is characterized by increased vari
 
 ## Tutorial
 
-A tutorial for how to use the libraries and their capabilites can be found here: [Sensor_Data_Tutorial](https://github.com/googleinterns/sensor-tools/blob/master/Sensor_Data_Tutorial.ipynb). The tutorial explores the how to use these libraries on an academic dataset of simulated smart watch data from [Dataset for ADL Recognition with Wrist-worn Accelerometer Data Set](https://archive.ics.uci.edu/ml/datasets/Dataset+for+ADL+Recognition+with+Wrist-worn+Accelerometer) from the University of Genova.
+A tutorial for how to use the libraries and their capabilites can be found here: [Sensor_Data_Tutorial.ipynb](https://github.com/googleinterns/sensor-tools/blob/master/Sensor_Data_Tutorial.ipynb). The tutorial explores the how to use these libraries on an academic dataset of simulated smart watch data from [Dataset for ADL Recognition with Wrist-worn Accelerometer Data Set](https://archive.ics.uci.edu/ml/datasets/Dataset+for+ADL+Recognition+with+Wrist-worn+Accelerometer) from the University of Genova.
 
 ## Dependencies
 
