@@ -83,11 +83,11 @@ def test_create_dataset():
         actual_set.add(pairing)
     assert actual_set == expected_set
 
-def test_get_np_X_Y():
+def test_get_np_examples_labels():
     CAT1 = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     CAT2 = np.array([10, 20, 30, 40, 50, 60, 70, 80])
     length = 5
     expected_Y = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
-    actual_X, actual_Y = extk.get_np_X_Y(CAT1, CAT2, length)
+    actual_X, actual_Y = extk.get_np_examples_labels(CAT1, CAT2, length)
     assert (expected_Y == actual_Y).all()
     assert len(actual_X) == 2 * length

@@ -154,7 +154,7 @@ def create_dataset(pos, neg, max_samples):
     np.random.shuffle(pos)
     np.random.shuffle(neg)
     if (max_samples > 0):
-        examples, labels = get_np_X_Y(pos, neg, max_samples)
+        examples, labels = get_np_examples_labels(pos, neg, max_samples)
     else:
 	    examples = np.concatenate((pos, neg))
 	    pos_label = np.ones(len(pos))
